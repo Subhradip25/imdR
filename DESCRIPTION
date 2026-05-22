@@ -23,8 +23,8 @@ Description: An R interface to India Meteorological Department (IMD) gridded
     indices, perform trend analysis, and produce publication-quality
     maps with Survey of India approved boundaries.
 License: MIT + file LICENSE
-URL: https://github.com/YOURGITHUB/imdR
-BugReports: https://github.com/YOURGITHUB/imdR/issues
+URL: https://github.com/Subhradip25/imdR
+BugReports: https://github.com/Subhradip25/imdR/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0
