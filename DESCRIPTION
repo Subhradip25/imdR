@@ -41,3 +41,7 @@ Imports:
     tidyterra,
     zoo
 LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
