@@ -5,47 +5,141 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/Subhradip25/imdR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Subhradip25/imdR/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/imdR)](https://CRAN.R-project.org/package=imdR)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
-The goal of imdR is to …
+**imdR** is an R package for downloading, processing, and visualizing
+India Meteorological Department (IMD) gridded daily meteorological data.
+It provides a complete pipeline from raw binary data to climate indices,
+trend analysis, and publication-quality maps — all within R.
+
+## What makes imdR different
+
+- **SOI-approved boundaries bundled** — state and district level maps
+  with Survey of India shapefiles, ready to use with no extra downloads
+- **State and district extraction** — mask any IMD raster to any of 36
+  states or 808 districts in one line
+- **Complete pipeline** — download → extract → indices → trends → maps
+- **No Python required** — pure R implementation with additional
+  capabilities beyond existing tools
+
+## Data coverage
+
+| Variable            | Resolution  | Period          |
+|---------------------|-------------|-----------------|
+| Rainfall            | 0.25 degree | 1901 to present |
+| Maximum temperature | 1.0 degree  | 1951 to present |
+| Minimum temperature | 1.0 degree  | 1951 to present |
 
 ## Installation
 
-You can install the development version of imdR like so:
-
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+# Install from CRAN
+install.packages("imdR")
+
+# Or install the development version from GitHub
+install.packages("remotes")
+remotes::install_github("Subhradip25/imdR")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
+## Quick start
 
 ``` r
 library(imdR)
-## basic example code
+
+file_dir <- "~/imdR_data"
+
+# Download 2020 rainfall data
+rain2020 <- get_data("rain", 2020, 2020, file_dir)
+
+# Plot a single day — full India map with SOI boundaries
+plot_imd(rain2020, "2020-06-28", "rain")
+
+# Zoom to Kerala
+plot_imd(rain2020, "2020-06-28", "rain",
+         level = "state", name = "Kerala")
+
+# Extract daily time series at Panaji, Goa
+goa_ts <- get_point(lat = 15.5, lon = 73.8,
+                    variable = "rain",
+                    start_yr = 2020, end_yr = 2020,
+                    file_dir = file_dir)
+
+# Plot time series with 30-day rolling mean
+plot_timeseries(goa_ts, variable = "rain",
+                title = "Goa Daily Rainfall 2020")
+
+# Compute rainfall indices for Goa
+goa_idx <- compute_rainfall_indices(rain2020,
+                                    level    = "state",
+                                    name     = "Goa",
+                                    file_dir = file_dir)
+print(goa_idx)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+## Functions
+
+| Function                     | Description                             |
+|------------------------------|-----------------------------------------|
+| `get_data()`                 | Download and read IMD binary data       |
+| `open_data()`                | Read cached IMD data from disk          |
+| `get_point()`                | Extract daily time series at a point    |
+| `get_point_all()`            | Extract all variables at a point        |
+| `get_bbox()`                 | Extract data within a bounding box      |
+| `extract_by_boundary()`      | Mask data to a state or district        |
+| `list_states()`              | List all 36 states and UTs              |
+| `list_districts()`           | List districts, optionally by state     |
+| `get_boundary()`             | Get sf boundary for a state or district |
+| `plot_imd()`                 | Publication-quality daily map           |
+| `plot_timeseries()`          | Daily time series with rolling mean     |
+| `compute_rainfall_indices()` | 11 rainfall climate indices             |
+| `compute_temp_indices()`     | 13 temperature climate indices          |
+| `trend_analysis()`           | Mann-Kendall test and Sen’s slope       |
+
+## Climate indices
+
+**Rainfall (11):** dr, d64, d115, rx1day, rx5day, rtwd, sdii, total,
+cwd, cdd, pci
+
+**Temperature (13):** mean_tmax, mean_tmin, mean_dtr, txx, txn, tnx,
+tnn, su35, su40, tr10, tr25, wsdi, csdi
+
+## Bundled boundaries
+
+imdR includes Survey of India (SOI) approved administrative boundaries
+for all 36 Indian states and union territories and 808 districts, ready
+to use with no additional downloads.
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+# List all states
+list_states()
+
+# List districts in any state
+list_districts("Kerala")
+
+# Get sf boundary object
+goa <- get_boundary("state", "Goa")
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+## Data source
 
-You can also embed plots, for example:
+IMD gridded data: <https://imdpune.gov.in/>
 
-<img src="man/figures/README-pressure-1.png" alt="" width="100%" />
+Boundaries: Survey of India (SOI)
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+## Citation
+
+``` r
+citation("imdR")
+```
+
+## Authors
+
+- Subhradip Bhattacharjee (maintainer)
+- Amitava Panja
+- Ankita Chakraborty
+- Basavareddy
