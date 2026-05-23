@@ -7,3 +7,5 @@
 ^data-raw$
 ^doc$
 ^Meta$
+^CRAN-SUBMISSION$
+^cran-comments\.md$
