@@ -23,9 +23,11 @@ list_states <- function() {
 #' list_districts("Kerala")
 #' @export
 list_districts <- function(state = NULL) {
-     if (is.null(state)) return(sort(india_districts$district_name))
+     if (is.null(state))
+          return(sort(india_districts$district_name))
      matched <- india_districts[
-          grepl(state, india_districts$state_name, ignore.case = TRUE), ]
+          grepl(state, india_districts$state_name,
+                ignore.case = TRUE), ]
      if (nrow(matched) == 0)
           stop("No state found matching: '", state, "'")
      sort(matched$district_name)
@@ -50,7 +52,8 @@ get_boundary <- function(level = "state", name) {
 
      if (level == "state") {
           out <- india_states[
-               grepl(name, india_states$state_name, ignore.case = TRUE), ]
+               grepl(name, india_states$state_name,
+                     ignore.case = TRUE), ]
      } else {
           out <- india_districts[
                grepl(name, india_districts$district_name,
@@ -60,38 +63,60 @@ get_boundary <- function(level = "state", name) {
      if (nrow(out) == 0)
           stop("No ", level, " found matching: '", name, "'")
 
-     cat("Found:", nrow(out), level, "feature(s) for '", name, "'\n")
+     cat("Found:", nrow(out), level,
+         "feature(s) for '", name, "'\n")
      return(out)
 }
 
 #' Extract IMD raster masked to a state or district boundary
 #'
+#' Crops and masks an IMD SpatRaster to any named state or district
+#' using bundled SOI-approved boundaries. Supports three output formats:
+#' \itemize{
+#'   \item \code{"netcdf"} -- CF-1.7 compliant NetCDF file
+#'   \item \code{"geotiff"} -- Multi-band GeoTIFF, opens directly in QGIS/ArcGIS
+#'   \item \code{"csv"} -- Long-format table with columns date, lat, lon, value
+#' }
+#'
 #' @param imd_raster A SpatRaster or named list from get_data().
 #' @param level "state" (default) or "district".
-#' @param name State or district name.
-#' @param variable Variable name for output filename.
-#' @param save Save output? Default FALSE.
-#' @param format "netcdf" or "geotiff".
+#' @param name State or district name (partial match allowed).
+#' @param variable Variable name used in output column and filename.
+#' @param save Save output to disk? Default FALSE.
+#' @param format Output format: "netcdf" (default), "geotiff", or "csv".
 #' @param file_dir Output directory.
-#' @return Invisible masked SpatRaster.
+#' @return Invisible masked SpatRaster. For CSV format, also writes a
+#'   long-format table with all grid cells and all days.
 #' @examples
 #' \dontrun{
 #' r <- get_data("rain", 2020, 2020, "~/imdR_data")
 #'
-#' # Extract for a state
-#' goa_rain <- extract_by_boundary(r,
-#'   level    = "state",
-#'   name     = "Goa",
-#'   variable = "rain")
+#' # Return masked raster without saving
+#' nagaland_rain <- extract_by_boundary(r, "state", "Nagaland", "rain")
 #'
-#' # Extract for a district and save as NetCDF
-#' kerala_rain <- extract_by_boundary(r,
-#'   level    = "state",
-#'   name     = "Kerala",
-#'   variable = "rain",
-#'   save     = TRUE,
-#'   format   = "netcdf",
-#'   file_dir = "~/imdR_data")
+#' # Save as NetCDF (CF-1.7, opens in Python/CDO/QGIS)
+#' extract_by_boundary(r, "state", "Nagaland", "rain",
+#'   save = TRUE, format = "netcdf", file_dir = "~/imdR_data")
+#'
+#' # Save as GeoTIFF (multi-band, opens in QGIS/ArcGIS)
+#' extract_by_boundary(r, "state", "Nagaland", "rain",
+#'   save = TRUE, format = "geotiff", file_dir = "~/imdR_data")
+#'
+#' # Save as long-format CSV (all grid points x all days)
+#' extract_by_boundary(r, "state", "Nagaland", "rain",
+#'   save = TRUE, format = "csv", file_dir = "~/imdR_data")
+#'
+#' # District level -- all three formats work
+#' extract_by_boundary(r, "district", "North Goa", "rain",
+#'   save = TRUE, format = "csv", file_dir = "~/imdR_data")
+#'
+#' extract_by_boundary(r, "district", "North Goa", "rain",
+#'   save = TRUE, format = "geotiff", file_dir = "~/imdR_data")
+#'
+#' # Multi-year example
+#' r_3yr <- get_data("rain", 2018, 2020, "~/imdR_data")
+#' extract_by_boundary(r_3yr, "state", "Nagaland", "rain",
+#'   save = TRUE, format = "csv", file_dir = "~/imdR_data")
 #' }
 #' @export
 extract_by_boundary <- function(imd_raster,
@@ -105,33 +130,104 @@ extract_by_boundary <- function(imd_raster,
      if (is.null(name))
           stop("Please provide a 'name' for the state or district.")
 
+     if (!format %in% c("netcdf", "geotiff", "csv"))
+          stop("format must be 'netcdf', 'geotiff', or 'csv'.")
+
+     # Stack multi-year list if needed
      if (is.list(imd_raster) && !inherits(imd_raster, "SpatRaster")) {
           cat("Stacking multi-year list for boundary extraction...\n")
           imd_raster <- do.call(c, imd_raster)
      }
 
+     # Crop and mask to boundary
      boundary <- get_boundary(level, name)
      r_crop   <- terra::crop(imd_raster, terra::vect(boundary))
      r_masked <- terra::mask(r_crop,     terra::vect(boundary))
 
-     cat("Region:", name, "(", level, ") |",
-         terra::nrow(r_masked), "x", terra::ncol(r_masked),
-         "x", terra::nlyr(r_masked), "layers\n")
+     cat("Region  :", name, "(", level, ")\n")
+     cat("Grid    :", terra::nrow(r_masked), "rows x",
+         terra::ncol(r_masked), "cols\n")
+     cat("Layers  :", terra::nlyr(r_masked), "days\n")
+     cat("Format  :", format, "\n")
 
      if (save) {
+
           clean_name <- gsub("[^A-Za-z0-9]", "_", name)
           yr_tag     <- paste0(names(r_masked)[1], "_",
                                names(r_masked)[terra::nlyr(r_masked)])
+
+          # ── NetCDF ───────────────────────────────────────────────
           if (format == "netcdf") {
-               fname <- file.path(path.expand(file_dir),
-                                  paste0(variable, "_", clean_name,
-                                         "_", yr_tag, ".nc"))
+
+               fname <- file.path(
+                    path.expand(file_dir),
+                    paste0(variable, "_", clean_name,
+                           "_", yr_tag, ".nc"))
                to_netcdf(r_masked, fname, variable)
-          } else {
-               fname <- file.path(path.expand(file_dir),
-                                  paste0(variable, "_", clean_name,
-                                         "_", yr_tag, ".tif"))
+
+               # ── GeoTIFF ──────────────────────────────────────────────
+          } else if (format == "geotiff") {
+
+               fname <- file.path(
+                    path.expand(file_dir),
+                    paste0(variable, "_", clean_name,
+                           "_", yr_tag, ".tif"))
                to_geotiff(r_masked, fname)
+
+               # ── CSV (long format) ────────────────────────────────────
+          } else if (format == "csv") {
+
+               dates  <- as.Date(names(r_masked))
+               n_days <- terra::nlyr(r_masked)
+               n_cell <- terra::ncell(r_masked)
+
+               # Cell coordinates (lon, lat for each cell)
+               coords        <- as.data.frame(
+                    terra::xyFromCell(r_masked, 1:n_cell)
+               )
+               names(coords) <- c("lon", "lat")
+
+               # Values matrix: rows = cells, cols = days
+               vals  <- as.matrix(r_masked, wide = FALSE)
+
+               # Keep only valid land cells (cells inside the boundary)
+               valid <- which(rowSums(!is.na(vals)) > 0)
+
+               cat("Valid land cells :", length(valid), "\n")
+               cat("Total rows in CSV:",
+                   length(valid) * n_days, "\n")
+               cat("Building long-format table...\n")
+
+               # Build one data frame per valid cell then rbind
+               df_list <- lapply(valid, function(i) {
+                    data.frame(
+                         date  = dates,
+                         lat   = round(coords$lat[i], 4),
+                         lon   = round(coords$lon[i], 4),
+                         value = round(vals[i, ], 4),
+                         stringsAsFactors = FALSE
+                    )
+               })
+
+               df           <- do.call(rbind, df_list)
+               names(df)[4] <- variable
+               df           <- df[order(df$date, df$lat, df$lon), ]
+               rownames(df) <- NULL
+
+               # Year tag for filename uses actual years not date strings
+               yr1    <- format(min(dates), "%Y")
+               yr2    <- format(max(dates), "%Y")
+               yr_csv <- if (yr1 == yr2) yr1 else paste0(yr1, "_", yr2)
+
+               fname <- file.path(
+                    path.expand(file_dir),
+                    paste0(variable, "_", clean_name,
+                           "_all_grids_", yr_csv, ".csv"))
+
+               write.csv(df, fname, row.names = FALSE)
+               cat("Saved:", fname, "\n")
+               cat("Rows:", nrow(df),
+                   "| Columns: date, lat, lon,", variable, "\n")
           }
      }
 
