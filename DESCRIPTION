@@ -5,7 +5,7 @@ Authors@R: c(
     person("Subhradip", "Bhattacharjee",
            email   = "subhradip25@gmail.com",
            role    = c("aut", "cre"),
-           comment = c(ORCID = "0000-0003-2320-2979")),
+           comment = c(ORCID = "https://orcid.org/0000-0003-2320-2979")),
     person("Amitava", "Panja",
            email   = "amitavapanja3@gmail.com",
            role    = "aut"),
@@ -26,6 +26,7 @@ License: MIT + file LICENSE
 URL: https://github.com/Subhradip25/imdR
 BugReports: https://github.com/Subhradip25/imdR/issues
 Encoding: UTF-8
+Language: en-US
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0
 Depends:
