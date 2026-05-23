@@ -29,14 +29,28 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
 
      imd_raster <- get_data(variable, start_yr, end_yr, file_dir)
 
-     if (is.list(imd_raster) && !inherits(imd_raster, "SpatRaster"))
-          imd_raster <- do.call(c, imd_raster)
+     # Extract year by year to avoid stacking large rasters into memory.
+     # Stacking 10+ years at once causes memory errors on Windows.
+     if (is.list(imd_raster) && !inherits(imd_raster, "SpatRaster")) {
+          cat("Extracting point data year by year...\n")
+          df_list <- lapply(names(imd_raster), function(yr) {
+               to_csv(imd_raster[[yr]], lat, lon)
+          })
+          df <- do.call(rbind, df_list)
+     } else {
+          df <- to_csv(imd_raster, lat, lon)
+     }
 
-     df              <- to_csv(imd_raster, lat, lon, file_path = NULL)
      colnames(df)[2] <- variable
      df$lat          <- lat
      df$lon          <- lon
      df              <- df[, c("date", "lat", "lon", variable)]
+     df              <- df[order(df$date), ]
+     rownames(df)    <- NULL
+
+     cat("Total rows:", nrow(df), "| Date range:",
+         as.character(min(df$date)), "to",
+         as.character(max(df$date)), "\n")
 
      if (save_csv) {
           fname <- file.path(
@@ -51,6 +65,11 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
 }
 
 #' Extract daily time series for all variables at a point
+#'
+#' Downloads or reads rain, tmax, and tmin at a location and merges
+#' them into a single data frame that also includes diurnal temperature
+#' range (DTR). Extraction is done year by year to avoid memory issues
+#' with long time series on Windows.
 #'
 #' @param lat Latitude in decimal degrees.
 #' @param lon Longitude in decimal degrees.
@@ -67,6 +86,12 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
 #'                     start_yr = 2020, end_yr = 2020,
 #'                     file_dir = "~/imdR_data")
 #' head(df)
+#'
+#' # Long time series — works on Windows without memory errors
+#' df <- get_point_all(lat = 15.5, lon = 73.8,
+#'                     start_yr = 1985, end_yr = 2020,
+#'                     file_dir = "~/imdR_data")
+#' nrow(df)
 #' }
 #' @export
 get_point_all <- function(lat, lon, start_yr, end_yr,
@@ -75,20 +100,38 @@ get_point_all <- function(lat, lon, start_yr, end_yr,
      cat("=== Extracting all variables at lat =",
          lat, ", lon =", lon, "===\n\n")
 
+     cat("--- Rainfall ---\n")
      df_rain <- get_point(lat, lon, "rain", start_yr, end_yr,
                           file_dir, save_csv = FALSE)
+
+     cat("\n--- Max Temperature ---\n")
      df_tmax <- get_point(lat, lon, "tmax", start_yr, end_yr,
                           file_dir, save_csv = FALSE)
+
+     cat("\n--- Min Temperature ---\n")
      df_tmin <- get_point(lat, lon, "tmin", start_yr, end_yr,
                           file_dir, save_csv = FALSE)
 
+     # Merge all three on date
      df <- merge(df_rain,
-                 df_tmax[, c("date", "tmax")], by = "date", all = TRUE)
+                 df_tmax[, c("date", "tmax")],
+                 by = "date", all = TRUE)
      df <- merge(df,
-                 df_tmin[, c("date", "tmin")], by = "date", all = TRUE)
+                 df_tmin[, c("date", "tmin")],
+                 by = "date", all = TRUE)
      df <- df[order(df$date),
               c("date", "lat", "lon", "rain", "tmax", "tmin")]
-     df$dtr <- round(df$tmax - df$tmin, 3)
+     df$dtr    <- round(df$tmax - df$tmin, 3)
+     rownames(df) <- NULL
+
+     cat("\n--- Merged summary ---\n")
+     cat("Rows:", nrow(df), "\n")
+     cat("Date range:", as.character(min(df$date, na.rm = TRUE)),
+         "to", as.character(max(df$date, na.rm = TRUE)), "\n")
+     cat("Columns:", paste(names(df), collapse = ", "), "\n")
+     cat("Non-NA rain days:", sum(!is.na(df$rain)), "\n")
+     cat("Non-NA tmax days:", sum(!is.na(df$tmax)), "\n")
+     cat("Non-NA tmin days:", sum(!is.na(df$tmin)), "\n")
 
      if (save_csv) {
           fname <- file.path(
