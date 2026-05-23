@@ -19,3 +19,13 @@ Invisible file path.
 \description{
 Save an IMD SpatRaster as CF-1.7 compliant NetCDF
 }
+\examples{
+\dontrun{
+r <- get_data("rain", 2020, 2020, "~/imdR_data")
+to_netcdf(r, "~/imdR_data/rain_2020.nc", "rain")
+
+# Save a boundary-extracted region
+goa <- extract_by_boundary(r, "state", "Goa", "rain")
+to_netcdf(goa, "~/imdR_data/rain_Goa_2020.nc", "rain")
+}
+}

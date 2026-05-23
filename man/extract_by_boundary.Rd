@@ -35,3 +35,23 @@ Invisible masked SpatRaster.
 \description{
 Extract IMD raster masked to a state or district boundary
 }
+\examples{
+\dontrun{
+r <- get_data("rain", 2020, 2020, "~/imdR_data")
+
+# Extract for a state
+goa_rain <- extract_by_boundary(r,
+  level    = "state",
+  name     = "Goa",
+  variable = "rain")
+
+# Extract for a district and save as NetCDF
+kerala_rain <- extract_by_boundary(r,
+  level    = "state",
+  name     = "Kerala",
+  variable = "rain",
+  save     = TRUE,
+  format   = "netcdf",
+  file_dir = "~/imdR_data")
+}
+}

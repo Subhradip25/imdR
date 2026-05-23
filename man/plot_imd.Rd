@@ -42,3 +42,23 @@ Invisible ggplot2 object.
 Publication-quality map with SOI boundaries. Supports full-India,
 state-level, and district-level zoom.
 }
+\examples{
+\dontrun{
+r <- get_data("rain", 2020, 2020, "~/imdR_data")
+
+# Full India map
+plot_imd(r, "2020-06-28", "rain")
+
+# Zoom to Kerala
+plot_imd(r, "2020-06-28", "rain",
+         level = "state", name = "Kerala")
+
+# Zoom to North Goa district
+plot_imd(r, "2020-06-28", "rain",
+         level = "district", name = "North Goa")
+
+# Save to file
+plot_imd(r, "2020-06-28", "rain",
+         save_path = "~/imdR_data/rain_20200628.png")
+}
+}

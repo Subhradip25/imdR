@@ -5,6 +5,16 @@
 #' @param lon Longitude in decimal degrees.
 #' @param file_path If provided, saves output as CSV.
 #' @return Invisible data frame with columns date and value.
+#' @examples
+#' \dontrun{
+#' r  <- get_data("rain", 2020, 2020, "~/imdR_data")
+#' df <- to_csv(r, lat = 15.5, lon = 73.8)
+#' head(df)
+#'
+#' # Save directly to file
+#' to_csv(r, lat = 15.5, lon = 73.8,
+#'        file_path = "~/imdR_data/panaji_rain_2020.csv")
+#' }
 #' @export
 to_csv <- function(imd_raster, lat, lon, file_path = NULL) {
 
@@ -39,6 +49,15 @@ to_csv <- function(imd_raster, lat, lon, file_path = NULL) {
 #' @param file_path Output .nc file path.
 #' @param variable One of "rain", "tmax", "tmin".
 #' @return Invisible file path.
+#' @examples
+#' \dontrun{
+#' r <- get_data("rain", 2020, 2020, "~/imdR_data")
+#' to_netcdf(r, "~/imdR_data/rain_2020.nc", "rain")
+#'
+#' # Save a boundary-extracted region
+#' goa <- extract_by_boundary(r, "state", "Goa", "rain")
+#' to_netcdf(goa, "~/imdR_data/rain_Goa_2020.nc", "rain")
+#' }
 #' @export
 to_netcdf <- function(imd_raster, file_path, variable = "rain") {
 
@@ -118,6 +137,15 @@ to_netcdf <- function(imd_raster, file_path, variable = "rain") {
 #' @param imd_raster A terra SpatRaster.
 #' @param file_path Output .tif file path.
 #' @return Invisible file path.
+#' @examples
+#' \dontrun{
+#' r <- get_data("rain", 2020, 2020, "~/imdR_data")
+#' to_geotiff(r, "~/imdR_data/rain_2020.tif")
+#'
+#' # Save a boundary-extracted region
+#' goa <- extract_by_boundary(r, "state", "Goa", "rain")
+#' to_geotiff(goa, "~/imdR_data/rain_Goa_2020.tif")
+#' }
 #' @export
 to_geotiff <- function(imd_raster, file_path) {
 

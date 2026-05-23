@@ -44,3 +44,22 @@ Invisible SpatRaster of the cropped region.
 \description{
 Extract IMD data within a bounding box
 }
+\examples{
+\dontrun{
+# Extract rainfall over Kerala bounding box
+r <- get_bbox(lat_min = 8,  lat_max = 13,
+              lon_min = 74, lon_max = 78,
+              variable = "rain",
+              start_yr = 2020, end_yr = 2020,
+              file_dir = "~/imdR_data",
+              format   = "netcdf")
+
+# Extract as GeoTIFF
+r <- get_bbox(lat_min = 8,  lat_max = 13,
+              lon_min = 74, lon_max = 78,
+              variable = "rain",
+              start_yr = 2020, end_yr = 2020,
+              file_dir = "~/imdR_data",
+              format   = "geotiff")
+}
+}

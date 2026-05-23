@@ -26,3 +26,16 @@ terra SpatRaster objects. Single year returns a SpatRaster directly.
 Multi-year returns a named list of SpatRasters (one per year) because
 leap and non-leap years have different layer counts.
 }
+\examples{
+\dontrun{
+# Download single year rainfall
+rain2020 <- get_data("rain", 2020, 2020, "~/imdR_data")
+
+# Download multiple years (returns named list)
+rain_3yr <- get_data("rain", 2018, 2020, "~/imdR_data")
+
+# Download temperature data
+tmax2020 <- get_data("tmax", 2020, 2020, "~/imdR_data")
+tmin2020 <- get_data("tmin", 2020, 2020, "~/imdR_data")
+}
+}

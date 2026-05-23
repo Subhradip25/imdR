@@ -17,3 +17,10 @@ An sf object with the matching boundary.
 \description{
 Get the sf boundary for a named state or district
 }
+\examples{
+# Get state boundary
+goa <- get_boundary("state", "Goa")
+
+# Get district boundary
+north_goa <- get_boundary("district", "North Goa")
+}

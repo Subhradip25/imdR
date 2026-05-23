@@ -1,6 +1,8 @@
 #' List all state names in the bundled SOI shapefile
 #'
 #' @return A sorted character vector of 36 state/UT names.
+#' @examples
+#' list_states()
 #' @export
 list_states <- function() {
      sort(india_states$state_name)
@@ -10,6 +12,15 @@ list_states <- function() {
 #'
 #' @param state Character or NULL. Partial match, case-insensitive.
 #' @return A sorted character vector of district names.
+#' @examples
+#' # All districts
+#' list_districts()
+#'
+#' # Districts in Goa
+#' list_districts("Goa")
+#'
+#' # Districts in Kerala
+#' list_districts("Kerala")
 #' @export
 list_districts <- function(state = NULL) {
      if (is.null(state)) return(sort(india_districts$district_name))
@@ -25,6 +36,12 @@ list_districts <- function(state = NULL) {
 #' @param level "state" (default) or "district".
 #' @param name State or district name (partial match allowed).
 #' @return An sf object with the matching boundary.
+#' @examples
+#' # Get state boundary
+#' goa <- get_boundary("state", "Goa")
+#'
+#' # Get district boundary
+#' north_goa <- get_boundary("district", "North Goa")
 #' @export
 get_boundary <- function(level = "state", name) {
 
@@ -57,6 +74,25 @@ get_boundary <- function(level = "state", name) {
 #' @param format "netcdf" or "geotiff".
 #' @param file_dir Output directory.
 #' @return Invisible masked SpatRaster.
+#' @examples
+#' \dontrun{
+#' r <- get_data("rain", 2020, 2020, "~/imdR_data")
+#'
+#' # Extract for a state
+#' goa_rain <- extract_by_boundary(r,
+#'   level    = "state",
+#'   name     = "Goa",
+#'   variable = "rain")
+#'
+#' # Extract for a district and save as NetCDF
+#' kerala_rain <- extract_by_boundary(r,
+#'   level    = "state",
+#'   name     = "Kerala",
+#'   variable = "rain",
+#'   save     = TRUE,
+#'   format   = "netcdf",
+#'   file_dir = "~/imdR_data")
+#' }
 #' @export
 extract_by_boundary <- function(imd_raster,
                                 level    = "state",

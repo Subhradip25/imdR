@@ -17,3 +17,13 @@ Invisible file path.
 \description{
 Save an IMD SpatRaster as a compressed GeoTIFF
 }
+\examples{
+\dontrun{
+r <- get_data("rain", 2020, 2020, "~/imdR_data")
+to_geotiff(r, "~/imdR_data/rain_2020.tif")
+
+# Save a boundary-extracted region
+goa <- extract_by_boundary(r, "state", "Goa", "rain")
+to_geotiff(goa, "~/imdR_data/rain_Goa_2020.tif")
+}
+}

@@ -32,3 +32,23 @@ Invisible ggplot2 object.
 \description{
 Plot a daily time series with 30-day rolling mean
 }
+\examples{
+\dontrun{
+# Extract point data and plot
+df <- get_point(lat = 15.5, lon = 73.8,
+                variable = "rain",
+                start_yr = 2020, end_yr = 2020,
+                file_dir = "~/imdR_data",
+                save_csv = FALSE)
+plot_timeseries(df, variable = "rain")
+
+# Plot temperature with custom title
+df_tmax <- get_point(lat = 15.5, lon = 73.8,
+                     variable = "tmax",
+                     start_yr = 2020, end_yr = 2020,
+                     file_dir = "~/imdR_data",
+                     save_csv = FALSE)
+plot_timeseries(df_tmax, variable = "tmax",
+                title = "Goa Maximum Temperature 2020")
+}
+}

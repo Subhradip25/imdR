@@ -11,6 +11,24 @@
 #' @param format "netcdf" (default) or "geotiff".
 #' @param save Save output? Default TRUE.
 #' @return Invisible SpatRaster of the cropped region.
+#' @examples
+#' \dontrun{
+#' # Extract rainfall over Kerala bounding box
+#' r <- get_bbox(lat_min = 8,  lat_max = 13,
+#'               lon_min = 74, lon_max = 78,
+#'               variable = "rain",
+#'               start_yr = 2020, end_yr = 2020,
+#'               file_dir = "~/imdR_data",
+#'               format   = "netcdf")
+#'
+#' # Extract as GeoTIFF
+#' r <- get_bbox(lat_min = 8,  lat_max = 13,
+#'               lon_min = 74, lon_max = 78,
+#'               variable = "rain",
+#'               start_yr = 2020, end_yr = 2020,
+#'               file_dir = "~/imdR_data",
+#'               format   = "geotiff")
+#' }
 #' @export
 get_bbox <- function(lat_min, lat_max, lon_min, lon_max,
                      variable, start_yr, end_yr,

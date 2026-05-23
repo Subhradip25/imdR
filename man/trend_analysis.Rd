@@ -38,3 +38,32 @@ sens_slope, trend_direction, total_change.
 Aggregates multi-cell index data to spatial means per year, then
 performs Mann-Kendall test and Sen's slope estimation.
 }
+\examples{
+\dontrun{
+# Download 10 years of rainfall
+r   <- get_data("rain", 2011, 2020, "~/imdR_data")
+idx <- compute_rainfall_indices(r, file_dir = "~/imdR_data")
+
+# Trend in annual total rainfall
+trend_analysis(idx, index_col = "total",
+               file_dir = "~/imdR_data")
+
+# Trend in rainy days
+trend_analysis(idx, index_col = "dr",
+               file_dir = "~/imdR_data")
+
+# Region-specific trend
+goa_idx <- compute_rainfall_indices(r,
+  level = "state", name = "Goa",
+  file_dir = "~/imdR_data")
+trend_analysis(goa_idx, index_col = "total",
+               name = "Goa", file_dir = "~/imdR_data")
+
+# Temperature trend
+tx  <- get_data("tmax", 2011, 2020, "~/imdR_data")
+tn  <- get_data("tmin", 2011, 2020, "~/imdR_data")
+tidx <- compute_temp_indices(tx, tn, file_dir = "~/imdR_data")
+trend_analysis(tidx, index_col = "mean_tmax",
+               file_dir = "~/imdR_data")
+}
+}

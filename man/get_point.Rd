@@ -35,3 +35,19 @@ Invisible data frame with columns date, lat, lon, variable.
 \description{
 Extract daily time series for a single variable at a point
 }
+\examples{
+\dontrun{
+# Extract daily rainfall at Panaji, Goa
+df <- get_point(lat = 15.5, lon = 73.8,
+                variable = "rain",
+                start_yr = 2020, end_yr = 2020,
+                file_dir = "~/imdR_data")
+head(df)
+
+# Extract temperature
+df_tmax <- get_point(lat = 15.5, lon = 73.8,
+                     variable = "tmax",
+                     start_yr = 2020, end_yr = 2020,
+                     file_dir = "~/imdR_data")
+}
+}

@@ -8,6 +8,21 @@
 #' @param file_dir Directory for .grd files.
 #' @param save_csv Save output as CSV? Default TRUE.
 #' @return Invisible data frame with columns date, lat, lon, variable.
+#' @examples
+#' \dontrun{
+#' # Extract daily rainfall at Panaji, Goa
+#' df <- get_point(lat = 15.5, lon = 73.8,
+#'                 variable = "rain",
+#'                 start_yr = 2020, end_yr = 2020,
+#'                 file_dir = "~/imdR_data")
+#' head(df)
+#'
+#' # Extract temperature
+#' df_tmax <- get_point(lat = 15.5, lon = 73.8,
+#'                      variable = "tmax",
+#'                      start_yr = 2020, end_yr = 2020,
+#'                      file_dir = "~/imdR_data")
+#' }
 #' @export
 get_point <- function(lat, lon, variable, start_yr, end_yr,
                       file_dir = ".", save_csv = TRUE) {
@@ -45,6 +60,14 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
 #' @param save_csv Save merged output as CSV? Default TRUE.
 #' @return Invisible data frame with columns date, lat, lon,
 #'   rain, tmax, tmin, dtr.
+#' @examples
+#' \dontrun{
+#' # Extract rain, tmax, tmin and DTR at Panaji, Goa
+#' df <- get_point_all(lat = 15.5, lon = 73.8,
+#'                     start_yr = 2020, end_yr = 2020,
+#'                     file_dir = "~/imdR_data")
+#' head(df)
+#' }
 #' @export
 get_point_all <- function(lat, lon, start_yr, end_yr,
                           file_dir = ".", save_csv = TRUE) {

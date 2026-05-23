@@ -12,3 +12,6 @@ A sorted character vector of 36 state/UT names.
 \description{
 List all state names in the bundled SOI shapefile
 }
+\examples{
+list_states()
+}

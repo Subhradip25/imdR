@@ -11,6 +11,18 @@
 #' @param file_dir Directory to save downloaded .grd files.
 #' @param overwrite Re-download even if file exists? Default FALSE.
 #' @return A SpatRaster (single year) or named list of SpatRasters (multi-year).
+#' @examples
+#' \dontrun{
+#' # Download single year rainfall
+#' rain2020 <- get_data("rain", 2020, 2020, "~/imdR_data")
+#'
+#' # Download multiple years (returns named list)
+#' rain_3yr <- get_data("rain", 2018, 2020, "~/imdR_data")
+#'
+#' # Download temperature data
+#' tmax2020 <- get_data("tmax", 2020, 2020, "~/imdR_data")
+#' tmin2020 <- get_data("tmin", 2020, 2020, "~/imdR_data")
+#' }
 #' @export
 get_data <- function(variable, start_yr, end_yr,
                      file_dir = ".", overwrite = FALSE) {
@@ -98,6 +110,11 @@ get_data <- function(variable, start_yr, end_yr,
 #' @param end_yr End year.
 #' @param file_dir Directory containing the variable sub-folder.
 #' @return A SpatRaster (single year) or named list (multi-year).
+#' @examples
+#' \dontrun{
+#' rain2020 <- open_data("rain", 2020, 2020, "~/imdR_data")
+#' rain_3yr <- open_data("rain", 2018, 2020, "~/imdR_data")
+#' }
 #' @export
 open_data <- function(variable, start_yr, end_yr, file_dir = ".") {
 

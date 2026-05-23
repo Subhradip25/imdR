@@ -10,6 +10,22 @@
 #' @param save_csv Save results as CSV? Default TRUE.
 #' @return Invisible data frame with columns year, cell, dr, d64, d115,
 #'   rx1day, rx5day, rtwd, sdii, total, cwd, cdd, pci.
+#' @examples
+#' \dontrun{
+#' # Full India rainfall indices for 2020
+#' r   <- get_data("rain", 2020, 2020, "~/imdR_data")
+#' idx <- compute_rainfall_indices(r, file_dir = "~/imdR_data")
+#'
+#' # State level indices
+#' goa_idx <- compute_rainfall_indices(r,
+#'   level    = "state",
+#'   name     = "Goa",
+#'   file_dir = "~/imdR_data")
+#'
+#' # Multi-year indices for trend analysis
+#' r_3yr   <- get_data("rain", 2018, 2020, "~/imdR_data")
+#' idx_3yr <- compute_rainfall_indices(r_3yr, file_dir = "~/imdR_data")
+#' }
 #' @export
 compute_rainfall_indices <- function(rain_raster,
                                      level    = NULL,
@@ -26,9 +42,9 @@ compute_rainfall_indices <- function(rain_raster,
                     file_dir = file_dir, save_csv = FALSE
                )
           })
-          out        <- do.call(rbind, all_results)
+          out           <- do.call(rbind, all_results)
           rownames(out) <- NULL
-          valid_rows <- !is.na(out$total)
+          valid_rows    <- !is.na(out$total)
           if (save_csv) {
                region_tag <- if (!is.null(name))
                     paste0("_", gsub(" ", "_", name)) else ""
@@ -125,9 +141,9 @@ compute_rainfall_indices <- function(rain_raster,
           )
      }
 
-     out        <- do.call(rbind, results)
+     out           <- do.call(rbind, results)
      rownames(out) <- NULL
-     valid_rows <- !is.na(out$total)
+     valid_rows    <- !is.na(out$total)
      cat("\nDone! Valid land cells:", sum(valid_rows), "\n")
 
      if (save_csv) {
@@ -155,6 +171,25 @@ compute_rainfall_indices <- function(rain_raster,
 #' @return Invisible data frame with columns year, cell, mean_tmax,
 #'   mean_tmin, mean_dtr, txx, txn, tnx, tnn, su35, su40, tr10, tr25,
 #'   wsdi, csdi.
+#' @examples
+#' \dontrun{
+#' # Full India temperature indices for 2020
+#' tx  <- get_data("tmax", 2020, 2020, "~/imdR_data")
+#' tn  <- get_data("tmin", 2020, 2020, "~/imdR_data")
+#' idx <- compute_temp_indices(tx, tn, file_dir = "~/imdR_data")
+#'
+#' # State level indices
+#' goa_idx <- compute_temp_indices(tx, tn,
+#'   level    = "state",
+#'   name     = "Goa",
+#'   file_dir = "~/imdR_data")
+#'
+#' # Multi-year temperature indices
+#' tx_3yr  <- get_data("tmax", 2018, 2020, "~/imdR_data")
+#' tn_3yr  <- get_data("tmin", 2018, 2020, "~/imdR_data")
+#' idx_3yr <- compute_temp_indices(tx_3yr, tn_3yr,
+#'                                  file_dir = "~/imdR_data")
+#' }
 #' @export
 compute_temp_indices <- function(tmax_raster,
                                  tmin_raster,
@@ -173,9 +208,9 @@ compute_temp_indices <- function(tmax_raster,
                     file_dir=file_dir, save_csv=FALSE
                )
           })
-          out        <- do.call(rbind, all_results)
+          out           <- do.call(rbind, all_results)
           rownames(out) <- NULL
-          valid_rows <- !is.na(out$mean_tmax)
+          valid_rows    <- !is.na(out$mean_tmax)
           if (save_csv) {
                region_tag <- if (!is.null(name))
                     paste0("_", gsub(" ", "_", name)) else ""
@@ -279,9 +314,9 @@ compute_temp_indices <- function(tmax_raster,
           )
      }
 
-     out        <- do.call(rbind, results)
+     out           <- do.call(rbind, results)
      rownames(out) <- NULL
-     valid_rows <- !is.na(out$mean_tmax)
+     valid_rows    <- !is.na(out$mean_tmax)
      cat("\nDone! Valid land cells:", sum(valid_rows), "\n")
 
      if (save_csv) {

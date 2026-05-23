@@ -34,3 +34,23 @@ wsdi, csdi.
 \description{
 Computes 13 indices per grid cell per year from daily tmax and tmin.
 }
+\examples{
+\dontrun{
+# Full India temperature indices for 2020
+tx  <- get_data("tmax", 2020, 2020, "~/imdR_data")
+tn  <- get_data("tmin", 2020, 2020, "~/imdR_data")
+idx <- compute_temp_indices(tx, tn, file_dir = "~/imdR_data")
+
+# State level indices
+goa_idx <- compute_temp_indices(tx, tn,
+  level    = "state",
+  name     = "Goa",
+  file_dir = "~/imdR_data")
+
+# Multi-year temperature indices
+tx_3yr  <- get_data("tmax", 2018, 2020, "~/imdR_data")
+tn_3yr  <- get_data("tmin", 2018, 2020, "~/imdR_data")
+idx_3yr <- compute_temp_indices(tx_3yr, tn_3yr,
+                                 file_dir = "~/imdR_data")
+}
+}

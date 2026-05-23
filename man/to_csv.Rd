@@ -21,3 +21,14 @@ Invisible data frame with columns date and value.
 \description{
 Extract a daily time series at a point location
 }
+\examples{
+\dontrun{
+r  <- get_data("rain", 2020, 2020, "~/imdR_data")
+df <- to_csv(r, lat = 15.5, lon = 73.8)
+head(df)
+
+# Save directly to file
+to_csv(r, lat = 15.5, lon = 73.8,
+       file_path = "~/imdR_data/panaji_rain_2020.csv")
+}
+}

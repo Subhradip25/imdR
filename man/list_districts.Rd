@@ -15,3 +15,13 @@ A sorted character vector of district names.
 \description{
 List district names, optionally filtered by state
 }
+\examples{
+# All districts
+list_districts()
+
+# Districts in Goa
+list_districts("Goa")
+
+# Districts in Kerala
+list_districts("Kerala")
+}

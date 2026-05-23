@@ -26,3 +26,12 @@ rain, tmax, tmin, dtr.
 \description{
 Extract daily time series for all variables at a point
 }
+\examples{
+\dontrun{
+# Extract rain, tmax, tmin and DTR at Panaji, Goa
+df <- get_point_all(lat = 15.5, lon = 73.8,
+                    start_yr = 2020, end_yr = 2020,
+                    file_dir = "~/imdR_data")
+head(df)
+}
+}

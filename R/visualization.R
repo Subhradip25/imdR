@@ -13,6 +13,25 @@
 #' @param width Plot width in inches. Default 7.
 #' @param height Plot height in inches. Default 8.
 #' @return Invisible ggplot2 object.
+#' @examples
+#' \dontrun{
+#' r <- get_data("rain", 2020, 2020, "~/imdR_data")
+#'
+#' # Full India map
+#' plot_imd(r, "2020-06-28", "rain")
+#'
+#' # Zoom to Kerala
+#' plot_imd(r, "2020-06-28", "rain",
+#'          level = "state", name = "Kerala")
+#'
+#' # Zoom to North Goa district
+#' plot_imd(r, "2020-06-28", "rain",
+#'          level = "district", name = "North Goa")
+#'
+#' # Save to file
+#' plot_imd(r, "2020-06-28", "rain",
+#'          save_path = "~/imdR_data/rain_20200628.png")
+#' }
 #' @export
 plot_imd <- function(imd_raster, date,
                      variable  = "rain",
@@ -124,6 +143,25 @@ plot_imd <- function(imd_raster, date,
 #' @param width Width in inches. Default 10.
 #' @param height Height in inches. Default 5.
 #' @return Invisible ggplot2 object.
+#' @examples
+#' \dontrun{
+#' # Extract point data and plot
+#' df <- get_point(lat = 15.5, lon = 73.8,
+#'                 variable = "rain",
+#'                 start_yr = 2020, end_yr = 2020,
+#'                 file_dir = "~/imdR_data",
+#'                 save_csv = FALSE)
+#' plot_timeseries(df, variable = "rain")
+#'
+#' # Plot temperature with custom title
+#' df_tmax <- get_point(lat = 15.5, lon = 73.8,
+#'                      variable = "tmax",
+#'                      start_yr = 2020, end_yr = 2020,
+#'                      file_dir = "~/imdR_data",
+#'                      save_csv = FALSE)
+#' plot_timeseries(df_tmax, variable = "tmax",
+#'                 title = "Goa Maximum Temperature 2020")
+#' }
 #' @export
 plot_timeseries <- function(df,
                             variable  = "rain",

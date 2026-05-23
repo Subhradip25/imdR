@@ -31,3 +31,20 @@ rx1day, rx5day, rtwd, sdii, total, cwd, cdd, pci.
 Computes 11 indices per grid cell per year. Handles single-year
 SpatRasters and multi-year named lists from get_data().
 }
+\examples{
+\dontrun{
+# Full India rainfall indices for 2020
+r   <- get_data("rain", 2020, 2020, "~/imdR_data")
+idx <- compute_rainfall_indices(r, file_dir = "~/imdR_data")
+
+# State level indices
+goa_idx <- compute_rainfall_indices(r,
+  level    = "state",
+  name     = "Goa",
+  file_dir = "~/imdR_data")
+
+# Multi-year indices for trend analysis
+r_3yr   <- get_data("rain", 2018, 2020, "~/imdR_data")
+idx_3yr <- compute_rainfall_indices(r_3yr, file_dir = "~/imdR_data")
+}
+}

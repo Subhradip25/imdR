@@ -21,3 +21,9 @@ A SpatRaster (single year) or named list (multi-year).
 \description{
 Read cached IMD .grd files from disk
 }
+\examples{
+\dontrun{
+rain2020 <- open_data("rain", 2020, 2020, "~/imdR_data")
+rain_3yr <- open_data("rain", 2018, 2020, "~/imdR_data")
+}
+}
