@@ -1,22 +1,21 @@
 Package: imdR
 Title: Download, Process and Visualize IMD Gridded Meteorological Data
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Subhradip", "Bhattacharjee",
-           email   = "subhradip25@gmail.com",
-           role    = c("aut", "cre"),
-           comment = c(ORCID = "https://orcid.org/0000-0003-2320-2979")),
+           email = "subhradip25@gmail.com",
+           role  = c("aut", "cre")),
     person("Amitava", "Panja",
-           email   = "amitavapanja3@gmail.com",
-           role    = "aut"),
+           email = "amitavapanja3@gmail.com",
+           role  = "aut"),
     person("Ankita", "Chakraborty",
-           email   = "ankita.acad@gmail.com",
-           role    = "aut"),
+           email = "ankita.acad@gmail.com",
+           role  = "aut"),
     person(given  = "Basavareddy",
            family = "",
            email  = "babloobasavareddy@gmail.com",
            role   = "aut"))
-Description: An R interface to India Meteorological Department (IMD) gridded
+Description: Interface to India Meteorological Department (IMD) gridded
     daily rainfall (0.25 degree, 1901-present) and temperature
     (1.0 degree, 1951-present) binary data. Provides functions to
     download, read, extract by point or boundary, compute climate
@@ -32,17 +31,17 @@ RoxygenNote: 8.0.0
 Depends:
     R (>= 4.1.0)
 Imports:
+    ggplot2,
     httr2,
     Kendall,
     ncdf4,
-    ggplot2,
     rlang,
     sf,
     terra,
     tidyterra,
     zoo
 LazyData: true
-Suggests: 
+Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
