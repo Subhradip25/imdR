@@ -1,0 +1,28 @@
+compute_rainfall_indices
+                        Compute rainfall climate indices
+compute_temp_indices    Compute temperature climate indices
+extract_by_boundary     Extract IMD raster masked to a state or
+                        district boundary
+get_bbox                Extract IMD data within a bounding box
+get_boundary            Get the sf boundary for a named state or
+                        district
+get_data                Download and read IMD gridded data
+get_point               Extract daily time series for a single variable
+                        at a point
+get_point_all           Extract daily time series for all variables at
+                        a point
+india_districts         India district boundaries (SOI-approved)
+india_states            India state boundaries (SOI-approved)
+list_districts          List district names, optionally filtered by
+                        state
+list_states             List all state names in the bundled SOI
+                        shapefile
+open_data               Read cached IMD .grd files from disk
+plot_imd                Plot a single day of IMD gridded data
+plot_timeseries         Plot a daily time series with 30-day rolling
+                        mean
+to_csv                  Extract a daily time series at a point location
+to_geotiff              Save an IMD SpatRaster as a compressed GeoTIFF
+to_netcdf               Save an IMD SpatRaster as a CF-1.7 compliant
+                        NetCDF file
+trend_analysis          Mann-Kendall trend analysis with Sen's slope

@@ -7,8 +7,19 @@
 
 ## Notes addressed since last submission
 
-* ORCID iD format corrected to full URL format as required by r-devel.
-* Added WORDLIST for domain-specific terms (IMD, Gridded, NetCDF, GeoTIFF).
+* ORCID removed from DESCRIPTION. Both bare format (0000-0003-2320-2979)
+  and URL format (https://orcid.org/0000-0003-2320-2979) are rejected by
+  R Under development (r90058). This appears to be a known bug in r-devel.
+  The ORCID will be added back once the bug is resolved upstream.
+
+* Spelling notes: IMD (India Meteorological Department) and Gridded are
+  standard domain-specific meteorological terms, not misspellings. IMD is
+  explicitly defined in the Description field. These terms are used
+  consistently throughout the package documentation and are well established
+  in the Indian meteorological literature.
+
+* inst/WORDLIST added in previous submission for domain-specific terms
+  (IMD, Gridded, NetCDF, GeoTIFF).
 
 ## Test environments
 

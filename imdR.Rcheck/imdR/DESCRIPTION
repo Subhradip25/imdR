@@ -1,0 +1,44 @@
+Package: imdR
+Title: Download, Process and Visualize IMD Gridded Meteorological Data
+Version: 0.1.1
+Authors@R: c(
+    person("Subhradip", "Bhattacharjee",
+           email = "subhradip25@gmail.com",
+           role  = c("aut", "cre")),
+    person("Amitava", "Panja",
+           email = "amitavapanja3@gmail.com",
+           role  = "aut"),
+    person("Ankita", "Chakraborty",
+           email = "ankita.acad@gmail.com",
+           role  = "aut"),
+    person(given  = "Basavareddy",
+           family = "",
+           email  = "babloobasavareddy@gmail.com",
+           role   = "aut"))
+Description: Interface to India Meteorological Department (IMD) gridded
+    daily rainfall (0.25 degree, 1901-present) and temperature
+    (1.0 degree, 1951-present) binary data. Provides functions to
+    download, read, extract by point or boundary, compute climate
+    indices, perform trend analysis, and produce publication-quality
+    maps with Survey of India approved boundaries.
+License: MIT + file LICENSE
+URL: https://github.com/Subhradip25/imdR
+BugReports: https://github.com/Subhradip25/imdR/issues
+Encoding: UTF-8
+Language: en-US
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 8.0.0
+Depends: R (>= 4.1.0)
+Imports: ggplot2, httr2, Kendall, ncdf4, rlang, sf, terra, tidyterra,
+        zoo
+LazyData: true
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2026-06-09 06:50:50 UTC; subhradip
+Author: Subhradip Bhattacharjee [aut, cre],
+  Amitava Panja [aut],
+  Ankita Chakraborty [aut],
+  Basavareddy [aut]
+Maintainer: Subhradip Bhattacharjee <subhradip25@gmail.com>
+Built: R 4.6.0; ; 2026-06-09 06:51:06 UTC; unix

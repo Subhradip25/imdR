@@ -1,0 +1,272 @@
+---
+title: "Introduction to imdR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to imdR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  eval     = FALSE
+)
+```
+
+## Overview
+
+`imdR` provides a complete R interface to India Meteorological Department
+(IMD) gridded daily meteorological data. It covers:
+
+- **Rainfall** — 0.25 degree resolution, 1901 to present
+- **Maximum temperature** — 1.0 degree resolution, 1951 to present
+- **Minimum temperature** — 1.0 degree resolution, 1951 to present
+
+The package bundles Survey of India (SOI) approved state and district
+boundaries, enabling boundary-aware extraction and publication-quality maps
+directly from R.
+
+## Installation
+
+```{r install}
+# Install from CRAN (once available)
+install.packages("imdR")
+
+# Or install the development version from GitHub
+# install.packages("remotes")
+remotes::install_github("Subhradip25/imdR")
+```
+
+```{r load}
+library(imdR)
+```
+
+## Step 1 — Explore available boundaries
+
+```{r boundaries}
+# List all 36 states and union territories
+list_states()
+
+# List all districts in a state
+list_districts("Goa")
+list_districts("Kerala")
+
+# Get the sf boundary object for any state or district
+goa_sf      <- get_boundary("state",    "Goa")
+north_goa   <- get_boundary("district", "North Goa")
+kerala_sf   <- get_boundary("state",    "Kerala")
+```
+
+## Step 2 — Download data
+
+```{r download}
+file_dir <- "~/imdR_data"
+
+# Single year — returns a SpatRaster directly
+rain2020 <- get_data("rain", 2020, 2020, file_dir)
+tmax2020 <- get_data("tmax", 2020, 2020, file_dir)
+tmin2020 <- get_data("tmin", 2020, 2020, file_dir)
+
+# Multi-year — returns a named list of SpatRasters (one per year)
+# because leap and non-leap years have different layer counts
+rain_3yr <- get_data("rain", 2018, 2020, file_dir)
+
+# Read previously downloaded files without re-downloading
+rain2020 <- open_data("rain", 2020, 2020, file_dir)
+```
+
+## Step 3 — Visualize
+
+```{r maps}
+# Full India map
+plot_imd(rain2020, "2020-06-28", "rain")
+
+# Zoom to a state
+plot_imd(rain2020, "2020-06-28", "rain",
+         level = "state", name = "Kerala",
+         save_path = "~/imdR_data/rain_Kerala_20200628.png")
+
+# Zoom to a district
+plot_imd(rain2020, "2020-06-28", "rain",
+         level = "district", name = "North Goa",
+         save_path = "~/imdR_data/rain_NorthGoa_20200628.png")
+
+# Temperature map
+plot_imd(tmax2020, "2020-05-20", "tmax",
+         save_path = "~/imdR_data/tmax_India_20200520.png")
+```
+
+## Step 4 — Point extraction
+
+```{r point}
+# Extract daily time series at Panaji, Goa
+goa_rain <- get_point(lat = 15.5, lon = 73.8,
+                      variable = "rain",
+                      start_yr = 2020, end_yr = 2020,
+                      file_dir = file_dir)
+
+head(goa_rain)
+
+# Extract all three variables at once (rain + tmax + tmin + DTR)
+goa_all <- get_point_all(lat = 15.5, lon = 73.8,
+                         start_yr = 2020, end_yr = 2020,
+                         file_dir  = file_dir)
+
+head(goa_all)
+
+# Plot the daily time series
+plot_timeseries(goa_rain, variable = "rain",
+                title = "Goa Daily Rainfall 2020")
+```
+
+## Step 5 — Bounding box and boundary extraction
+
+```{r extraction}
+# Crop to a bounding box
+western_ghats <- get_bbox(
+  lat_min = 8, lat_max = 21,
+  lon_min = 73, lon_max = 78,
+  variable = "rain", start_yr = 2020, end_yr = 2020,
+  file_dir = file_dir, format = "netcdf"
+)
+
+# Mask to a state boundary
+kerala_rain <- extract_by_boundary(
+  rain2020, level = "state", name = "Kerala",
+  variable = "rain", save = TRUE,
+  format = "netcdf", file_dir = file_dir
+)
+
+# Mask to a district boundary
+north_goa_rain <- extract_by_boundary(
+  rain2020, level = "district", name = "North Goa",
+  variable = "rain", save = TRUE,
+  format = "geotiff", file_dir = file_dir
+)
+```
+
+## Step 6 — Rainfall climate indices
+
+```{r rainfall-indices}
+# Compute 11 indices for full India (2020)
+rain_idx <- compute_rainfall_indices(rain2020,
+                                     file_dir = file_dir)
+
+# Available indices:
+# dr     — rainy days (>= 2.5 mm)
+# d64    — heavy precipitation days (>= 64.5 mm)
+# d115   — very heavy precipitation days (>= 115.6 mm)
+# rx1day — maximum 1-day rainfall
+# rx5day — maximum 5-day rainfall
+# rtwd   — total rainfall on wet days
+# sdii   — simple daily intensity index
+# total  — annual total rainfall
+# cwd    — consecutive wet days
+# cdd    — consecutive dry days
+# pci    — precipitation concentration index
+
+# Compute for Goa state only
+goa_rain_idx <- compute_rainfall_indices(
+  rain2020, level = "state", name = "Goa",
+  file_dir = file_dir
+)
+
+print(goa_rain_idx)
+
+# Multi-year indices for trend analysis
+idx_3yr <- compute_rainfall_indices(rain_3yr,
+                                    file_dir = file_dir)
+```
+
+## Step 7 — Temperature climate indices
+
+```{r temp-indices}
+# Compute 13 temperature indices for full India
+temp_idx <- compute_temp_indices(tmax2020, tmin2020,
+                                  file_dir = file_dir)
+
+# Available indices:
+# mean_tmax — mean daily maximum temperature
+# mean_tmin — mean daily minimum temperature
+# mean_dtr  — mean diurnal temperature range
+# txx       — hottest day (max of tmax)
+# txn       — coldest day (min of tmax)
+# tnx       — warmest night (max of tmin)
+# tnn       — coldest night (min of tmin)
+# su35      — summer days (tmax >= 35 C)
+# su40      — very hot days (tmax >= 40 C)
+# tr10      — cold nights (tmin <= 10 C)
+# tr25      — tropical nights (tmin >= 25 C)
+# wsdi      — warm spell duration index
+# csdi      — cold spell duration index
+
+# Compute for Goa
+goa_temp_idx <- compute_temp_indices(
+  tmax2020, tmin2020,
+  level = "state", name = "Goa",
+  file_dir = file_dir
+)
+
+print(goa_temp_idx)
+```
+
+## Step 8 — Trend analysis
+
+```{r trend}
+# Mann-Kendall test + Sen's slope on any index
+# Requires at least 3 years of data
+
+# Download a longer time series for meaningful trend
+rain_10yr <- get_data("rain", 2011, 2020, file_dir)
+idx_10yr  <- compute_rainfall_indices(rain_10yr,
+                                       file_dir = file_dir)
+
+# Trend in annual total rainfall
+trend_total <- trend_analysis(idx_10yr,
+                              index_col = "total",
+                              file_dir  = file_dir)
+
+# Trend in rainy days
+trend_dr <- trend_analysis(idx_10yr,
+                           index_col = "dr",
+                           file_dir  = file_dir)
+
+# Region-specific trend — Goa
+goa_idx_10yr <- compute_rainfall_indices(
+  rain_10yr, level = "state", name = "Goa",
+  file_dir = file_dir
+)
+
+trend_goa <- trend_analysis(goa_idx_10yr,
+                            index_col = "total",
+                            name      = "Goa",
+                            file_dir  = file_dir)
+```
+
+## Output files
+
+All functions that produce files use consistent naming conventions:
+
+| Function | Output file |
+|---|---|
+| `get_point()` | `rain_15.5N_73.8E_2020_2020.csv` |
+| `get_point_all()` | `imd_all_15.5N_73.8E_2020_2020.csv` |
+| `get_bbox()` | `rain_8N_21N_73E_78E_2020_2020.nc` |
+| `extract_by_boundary()` | `rain_Kerala_2020-01-01_2020-12-31.nc` |
+| `compute_rainfall_indices()` | `rainfall_indices_Goa.csv` |
+| `compute_temp_indices()` | `temp_indices_Goa.csv` |
+| `trend_analysis()` | `trend_total_Goa.csv` + `trend_total_Goa.png` |
+
+## Citation
+
+```{r citation}
+citation("imdR")
+```
+
+## Data source
+
+IMD gridded data: <https://imdpune.gov.in/>
+
+Boundaries: Survey of India (SOI)
