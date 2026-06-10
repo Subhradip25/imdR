@@ -37,7 +37,7 @@ df <- get_point_all(lat = 15.5, lon = 73.8,
                     file_dir = tempdir())
 head(df)
 
-# Long time series — works on Windows without memory errors
+# Long time series -- works on Windows without memory errors
 df <- get_point_all(lat = 15.5, lon = 73.8,
                     start_yr = 1985, end_yr = 2020,
                     file_dir = tempdir())

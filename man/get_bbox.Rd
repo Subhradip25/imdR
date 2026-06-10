@@ -49,7 +49,7 @@ Supports three output formats: NetCDF, GeoTIFF, and long-format CSV.
 }
 \examples{
 \donttest{
-# Indo-Gangetic Plains — NetCDF
+# Indo-Gangetic Plains -- NetCDF
 get_bbox(lat_min = 24, lat_max = 30,
          lon_min = 73, lon_max = 88,
          variable = "rain",
@@ -57,7 +57,7 @@ get_bbox(lat_min = 24, lat_max = 30,
          file_dir = tempdir(),
          format   = "netcdf")
 
-# Western Ghats — GeoTIFF
+# Western Ghats -- GeoTIFF
 get_bbox(lat_min = 8,  lat_max = 21,
          lon_min = 73, lon_max = 78,
          variable = "rain",
@@ -65,7 +65,7 @@ get_bbox(lat_min = 8,  lat_max = 21,
          file_dir = tempdir(),
          format   = "geotiff")
 
-# Northeast India — CSV (all grid points x all days)
+# Northeast India -- CSV (all grid points x all days)
 get_bbox(lat_min = 22, lat_max = 29,
          lon_min = 89, lon_max = 97,
          variable = "rain",

@@ -34,12 +34,14 @@ compute_rainfall_indices <- function(rain_raster,
                                      save_csv = TRUE) {
 
      if (is.list(rain_raster) && !inherits(rain_raster, "SpatRaster")) {
-          message("Multi-year list -- processing year by year...\n")
+          message("Multi-year list -- processing year by year...")
           all_results <- lapply(names(rain_raster), function(yr_name) {
                compute_rainfall_indices(
                     rain_raster = rain_raster[[yr_name]],
-                    level = level, name = name,
-                    file_dir = file_dir, save_csv = FALSE
+                    level    = level,
+                    name     = name,
+                    file_dir = file_dir,
+                    save_csv = FALSE
                )
           })
           out           <- do.call(rbind, all_results)
@@ -51,27 +53,26 @@ compute_rainfall_indices <- function(rain_raster,
                fname <- file.path(path.expand(file_dir),
                                   paste0("rainfall_indices", region_tag, ".csv"))
                write.csv(out[valid_rows, ], fname, row.names = FALSE)
-               message(paste("Saved:", fname, "\n"))
+               message(paste("Saved:", fname))
           }
           return(invisible(out))
      }
 
      if (!is.null(level) && !is.null(name)) {
           boundary    <- get_boundary(level, name)
-          rain_raster <- terra::mask(
-               terra::crop(rain_raster, .boundary_to_vect(boundary)),
-               .boundary_to_vect(boundary))
-          message(paste("Computing indices for:", name, "\n\n"))
+          bv          <- .boundary_to_vect(boundary)
+          rain_raster <- terra::mask(terra::crop(rain_raster, bv), bv)
+          message(paste("Computing indices for:", name))
      }
 
      dates  <- as.Date(names(rain_raster))
      years  <- unique(format(dates, "%Y"))
      n_cell <- terra::ncell(rain_raster)
-     message(paste(paste("Computing rainfall indices for", length(years)), "year(s)...\n"))
+     message(paste("Computing rainfall indices for", length(years), "year(s)..."))
      results <- list()
 
      for (yr in years) {
-          message(paste("  Year:", yr, "\n"))
+          message(paste("  Year:", yr))
           idx   <- which(format(dates, "%Y") == yr)
           vals  <- as.matrix(rain_raster[[idx]], wide = FALSE)
           valid <- rowSums(!is.na(vals)) > 0
@@ -104,7 +105,7 @@ compute_rainfall_indices <- function(rain_raster,
                       vals[valid,,drop=FALSE], 0), na.rm=TRUE)
 
           sdii        <- rep(NA_real_, n_cell)
-          sdii[valid] <- ifelse(dr[valid] > 0, rtwd[valid]/dr[valid], NA)
+          sdii[valid] <- ifelse(dr[valid] > 0, rtwd[valid] / dr[valid], NA)
 
           total        <- rep(NA_real_, n_cell)
           total[valid] <- rowSums(vals[valid,,drop=FALSE], na.rm=TRUE)
@@ -113,13 +114,15 @@ compute_rainfall_indices <- function(rain_raster,
           cwd[valid] <- apply(vals[valid,,drop=FALSE], 1, function(x) {
                wet <- x >= 2.5 & !is.na(x)
                if (!any(wet)) return(0)
-               r <- rle(wet); max(r$lengths[r$values])
+               r <- rle(wet)
+               max(r$lengths[r$values])
           })
 
           cdd        <- rep(NA_real_, n_cell)
           cdd[valid] <- apply(vals[valid,,drop=FALSE], 1, function(x) {
                dry <- x < 2.5 | is.na(x)
-               r <- rle(dry); max(r$lengths[r$values])
+               r   <- rle(dry)
+               max(r$lengths[r$values])
           })
 
           months   <- format(dates[idx], "%m")
@@ -129,22 +132,24 @@ compute_rainfall_indices <- function(rain_raster,
                mt <- tapply(x, months, sum, na.rm=TRUE)
                at <- sum(mt, na.rm=TRUE)
                if (at == 0) return(NA)
-               sum((mt/at)^2) * 100
+               sum((mt / at)^2) * 100
           })
 
           results[[yr]] <- data.frame(
-               year=as.integer(yr), cell=seq_len(n_cell),
-               dr=round(dr,1), d64=round(d64,1), d115=round(d115,1),
-               rx1day=round(rx1day,2), rx5day=round(rx5day,2),
-               rtwd=round(rtwd,2), sdii=round(sdii,3), total=round(total,2),
-               cwd=round(cwd,1), cdd=round(cdd,1), pci=round(pci_vals,3)
+               year   = as.integer(yr), cell = seq_len(n_cell),
+               dr     = round(dr,    1), d64    = round(d64,    1),
+               d115   = round(d115,  1), rx1day = round(rx1day, 2),
+               rx5day = round(rx5day,2), rtwd   = round(rtwd,   2),
+               sdii   = round(sdii,  3), total  = round(total,  2),
+               cwd    = round(cwd,   1), cdd    = round(cdd,    1),
+               pci    = round(pci_vals, 3)
           )
      }
 
      out           <- do.call(rbind, results)
      rownames(out) <- NULL
      valid_rows    <- !is.na(out$total)
-     message(paste(paste("\nDone! Valid land cells:", sum(valid_rows)), "\n"))
+     message(paste("Done! Valid land cells:", sum(valid_rows)))
 
      if (save_csv) {
           region_tag <- if (!is.null(name))
@@ -152,7 +157,7 @@ compute_rainfall_indices <- function(rain_raster,
           fname <- file.path(path.expand(file_dir),
                              paste0("rainfall_indices", region_tag, ".csv"))
           write.csv(out[valid_rows, ], fname, row.names = FALSE)
-          message(paste("Saved:", fname, "\n"))
+          message(paste("Saved:", fname))
      }
 
      return(invisible(out))
@@ -199,13 +204,15 @@ compute_temp_indices <- function(tmax_raster,
                                  save_csv = TRUE) {
 
      if (is.list(tmax_raster) && !inherits(tmax_raster, "SpatRaster")) {
-          message("Multi-year list -- processing year by year...\n")
+          message("Multi-year list -- processing year by year...")
           all_results <- lapply(names(tmax_raster), function(yr_name) {
                compute_temp_indices(
-                    tmax_raster=tmax_raster[[yr_name]],
-                    tmin_raster=tmin_raster[[yr_name]],
-                    level=level, name=name,
-                    file_dir=file_dir, save_csv=FALSE
+                    tmax_raster = tmax_raster[[yr_name]],
+                    tmin_raster = tmin_raster[[yr_name]],
+                    level    = level,
+                    name     = name,
+                    file_dir = file_dir,
+                    save_csv = FALSE
                )
           })
           out           <- do.call(rbind, all_results)
@@ -217,28 +224,28 @@ compute_temp_indices <- function(tmax_raster,
                fname <- file.path(path.expand(file_dir),
                                   paste0("temp_indices", region_tag, ".csv"))
                write.csv(out[valid_rows, ], fname, row.names = FALSE)
-               message(paste("Saved:", fname, "\n"))
+               message(paste("Saved:", fname))
           }
           return(invisible(out))
      }
 
      if (!is.null(level) && !is.null(name)) {
           boundary    <- get_boundary(level, name)
-          tmax_raster <- terra::mask(terra::crop(tmax_raster, .boundary_to_vect(boundary)),
-                                     .boundary_to_vect(boundary))
-          tmin_raster <- terra::mask(terra::crop(tmin_raster, .boundary_to_vect(boundary)),
-                                     .boundary_to_vect(boundary))
-          message(paste("Computing temperature indices for:", name, "\n\n"))
+          bv          <- .boundary_to_vect(boundary)
+          tmax_raster <- terra::mask(terra::crop(tmax_raster, bv), bv)
+          tmin_raster <- terra::mask(terra::crop(tmin_raster, bv), bv)
+          message(paste("Computing temperature indices for:", name))
      }
 
      dates  <- as.Date(names(tmax_raster))
      years  <- unique(format(dates, "%Y"))
      n_cell <- terra::ncell(tmax_raster)
-     message(paste(paste("Computing temperature indices for", length(years)), "year(s)...\n"))
+     message(paste("Computing temperature indices for",
+                   length(years), "year(s)..."))
      results <- list()
 
      for (yr in years) {
-          message(paste("  Year:", yr, "\n"))
+          message(paste("  Year:", yr))
           idx <- which(format(dates, "%Y") == yr)
           tx  <- as.matrix(tmax_raster[[idx]], wide=FALSE)
           tn  <- as.matrix(tmin_raster[[idx]], wide=FALSE)
@@ -286,9 +293,9 @@ compute_temp_indices <- function(tmax_raster,
           p90_tx      <- apply(tx, 1, quantile, probs=0.90, na.rm=TRUE)
           wsdi        <- rep(NA_real_, n_cell)
           wsdi[valid] <- sapply(seq_len(sum(valid)), function(ci) {
-               x <- tx[valid,,drop=FALSE][ci,]
+               x   <- tx[valid,,drop=FALSE][ci,]
                hot <- x > p90_tx[valid][ci] & !is.na(x)
-               r <- rle(hot)
+               r   <- rle(hot)
                if (!any(r$values)) return(0)
                sum(r$lengths[r$values & r$lengths >= 6])
           })
@@ -296,28 +303,29 @@ compute_temp_indices <- function(tmax_raster,
           p10_tn      <- apply(tn, 1, quantile, probs=0.10, na.rm=TRUE)
           csdi        <- rep(NA_real_, n_cell)
           csdi[valid] <- sapply(seq_len(sum(valid)), function(ci) {
-               x <- tn[valid,,drop=FALSE][ci,]
+               x    <- tn[valid,,drop=FALSE][ci,]
                cold <- x < p10_tn[valid][ci] & !is.na(x)
-               r <- rle(cold)
+               r    <- rle(cold)
                if (!any(r$values)) return(0)
                sum(r$lengths[r$values & r$lengths >= 6])
           })
 
           results[[yr]] <- data.frame(
-               year=as.integer(yr), cell=seq_len(n_cell),
-               mean_tmax=round(mean_tmax,2), mean_tmin=round(mean_tmin,2),
-               mean_dtr=round(mean_dtr,2), txx=round(txx,2),
-               txn=round(txn,2), tnx=round(tnx,2), tnn=round(tnn,2),
-               su35=round(su35,0), su40=round(su40,0),
-               tr10=round(tr10,0), tr25=round(tr25,0),
-               wsdi=round(wsdi,0), csdi=round(csdi,0)
+               year      = as.integer(yr), cell = seq_len(n_cell),
+               mean_tmax = round(mean_tmax, 2), mean_tmin = round(mean_tmin, 2),
+               mean_dtr  = round(mean_dtr,  2), txx  = round(txx,  2),
+               txn       = round(txn,  2),      tnx  = round(tnx,  2),
+               tnn       = round(tnn,  2),      su35 = round(su35, 0),
+               su40      = round(su40, 0),      tr10 = round(tr10, 0),
+               tr25      = round(tr25, 0),      wsdi = round(wsdi, 0),
+               csdi      = round(csdi, 0)
           )
      }
 
      out           <- do.call(rbind, results)
      rownames(out) <- NULL
      valid_rows    <- !is.na(out$mean_tmax)
-     message(paste(paste("\nDone! Valid land cells:", sum(valid_rows)), "\n"))
+     message(paste("Done! Valid land cells:", sum(valid_rows)))
 
      if (save_csv) {
           region_tag <- if (!is.null(name))
@@ -325,7 +333,7 @@ compute_temp_indices <- function(tmax_raster,
           fname <- file.path(path.expand(file_dir),
                              paste0("temp_indices", region_tag, ".csv"))
           write.csv(out[valid_rows, ], fname, row.names = FALSE)
-          message(paste("Saved:", fname, "\n"))
+          message(paste("Saved:", fname))
      }
 
      return(invisible(out))

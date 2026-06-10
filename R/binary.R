@@ -15,7 +15,8 @@ read_imd_binary <- function(filepath, variable, year) {
      n_vals  <- m$ncols * m$nrows * n_days
 
      message(paste("Reading", variable, "for year", year,
-         "| Grid:", m$ncols, "x", m$nrows, "| Days:", n_days, "\n"))
+                   "| Grid:", m$ncols, "x", m$nrows,
+                   "| Days:", n_days))
 
      con      <- file(filepath, "rb")
      raw_vals <- readBin(con, what = "numeric", n = n_vals,
@@ -25,9 +26,9 @@ read_imd_binary <- function(filepath, variable, year) {
      arr <- array(raw_vals, dim = c(m$ncols, m$nrows, n_days))
      arr[abs(arr - m$na_val) < 0.01] <- NA
 
-     message("Value range (non-NA):",
-         round(min(arr, na.rm = TRUE), 2), "to",
-         round(max(arr, na.rm = TRUE), 2), m$units, "\n")
+     message(paste("Value range (non-NA):",
+                   round(min(arr, na.rm = TRUE), 2), "to",
+                   round(max(arr, na.rm = TRUE), 2), m$units))
 
      return(arr)
 }

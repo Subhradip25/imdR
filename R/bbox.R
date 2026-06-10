@@ -18,7 +18,7 @@
 #' @return Invisible SpatRaster of the cropped region.
 #' @examples
 #' \donttest{
-#' # Indo-Gangetic Plains — NetCDF
+#' # Indo-Gangetic Plains -- NetCDF
 #' get_bbox(lat_min = 24, lat_max = 30,
 #'          lon_min = 73, lon_max = 88,
 #'          variable = "rain",
@@ -26,7 +26,7 @@
 #'          file_dir = tempdir(),
 #'          format   = "netcdf")
 #'
-#' # Western Ghats — GeoTIFF
+#' # Western Ghats -- GeoTIFF
 #' get_bbox(lat_min = 8,  lat_max = 21,
 #'          lon_min = 73, lon_max = 78,
 #'          variable = "rain",
@@ -34,7 +34,7 @@
 #'          file_dir = tempdir(),
 #'          format   = "geotiff")
 #'
-#' # Northeast India — CSV (all grid points x all days)
+#' # Northeast India -- CSV (all grid points x all days)
 #' get_bbox(lat_min = 22, lat_max = 29,
 #'          lon_min = 89, lon_max = 97,
 #'          variable = "rain",
@@ -69,16 +69,17 @@ get_bbox <- function(lat_min, lat_max, lon_min, lon_max,
           lat_min <- max(lat_min, ex[3]); lat_max <- min(lat_max, ex[4])
      }
 
-     message("=== get_bbox() ===\n")
-     message(paste("Variable:", variable, "| Years:", start_yr, "-", end_yr, "\n"))
+     message("=== get_bbox() ===")
+     message(paste("Variable:", variable,
+                   "| Years:", start_yr, "-", end_yr))
      message(paste("Bounding box: lat", lat_min, "-", lat_max,
-         "| lon", lon_min, "-", lon_max, "\n"))
-     message(paste("Format  :", format, "\n\n"))
+                   "| lon", lon_min, "-", lon_max))
+     message(paste("Format  :", format))
 
      imd_raster <- get_data(variable, start_yr, end_yr, file_dir)
 
      if (is.list(imd_raster) && !inherits(imd_raster, "SpatRaster")) {
-          message("Stacking multi-year list for bbox extraction...\n")
+          message("Stacking multi-year list for bbox extraction...")
           imd_raster <- do.call(c, imd_raster)
      }
 
@@ -87,9 +88,9 @@ get_bbox <- function(lat_min, lat_max, lon_min, lon_max,
           terra::ext(lon_min, lon_max, lat_min, lat_max)
      )
 
-     message(paste("Cropped:", terra::nrow(r_crop)), "rows x",
-         terra::ncol(r_crop), "cols x",
-         terra::nlyr(r_crop), "layers\n")
+     message(paste("Cropped:", terra::nrow(r_crop), "rows x",
+                   terra::ncol(r_crop), "cols x",
+                   terra::nlyr(r_crop), "layers"))
 
      if (save) {
 
@@ -103,16 +104,14 @@ get_bbox <- function(lat_min, lat_max, lon_min, lon_max,
 
                fname <- file.path(
                     path.expand(file_dir),
-                    paste0(variable, "_bbox_", bbox_tag,
-                           "_", yr_tag, ".nc"))
+                    paste0(variable, "_bbox_", bbox_tag, "_", yr_tag, ".nc"))
                to_netcdf(r_crop, fname, variable)
 
           } else if (format == "geotiff") {
 
                fname <- file.path(
                     path.expand(file_dir),
-                    paste0(variable, "_bbox_", bbox_tag,
-                           "_", yr_tag, ".tif"))
+                    paste0(variable, "_bbox_", bbox_tag, "_", yr_tag, ".tif"))
                to_geotiff(r_crop, fname)
 
           } else if (format == "csv") {
@@ -123,9 +122,9 @@ get_bbox <- function(lat_min, lat_max, lon_min, lon_max,
                     paste0(variable, "_bbox_", bbox_tag,
                            "_all_grids_", yr_tag, ".csv"))
                write.csv(df, fname, row.names = FALSE)
-               message(paste("Saved:", fname, "\n"))
-               message(paste("Rows:", nrow(df)),
-                   "| Columns: date, lat, lon,", variable, "\n")
+               message(paste("Saved:", fname))
+               message(paste("Rows:", nrow(df),
+                             "| Columns: date, lat, lon,", variable))
           }
      }
 

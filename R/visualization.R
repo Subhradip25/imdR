@@ -61,8 +61,8 @@ plot_imd <- function(imd_raster, date,
 
      if (!is.null(level) && !is.null(name)) {
           boundary <- get_boundary(level, name)
-          r_day    <- terra::mask(terra::crop(r_day, .boundary_to_vect(boundary)),
-                                  .boundary_to_vect(boundary))
+          bv       <- .boundary_to_vect(boundary)
+          r_day    <- terra::mask(terra::crop(r_day, bv), bv)
           zoom_sf  <- boundary
      }
 
@@ -127,7 +127,7 @@ plot_imd <- function(imd_raster, date,
      if (!is.null(save_path)) {
           ggplot2::ggsave(save_path, plot = p, width = width,
                           height = height, dpi = 300, bg = "white")
-          message(paste("Saved:", save_path, "\n"))
+          message(paste("Saved:", save_path))
      }
 
      print(p)
@@ -227,7 +227,7 @@ plot_timeseries <- function(df,
      if (!is.null(save_path)) {
           ggplot2::ggsave(save_path, plot = p, width = width,
                           height = height, dpi = 300, bg = "white")
-          message(paste("Saved:", save_path, "\n"))
+          message(paste("Saved:", save_path))
      }
 
      print(p)

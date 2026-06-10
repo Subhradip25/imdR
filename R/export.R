@@ -5,7 +5,7 @@
      if (bytes >= 1024^2) {
           paste0(round(bytes / 1024^2, 2), " MB")
      } else if (bytes >= 1024) {
-          paste0(round(bytes / 1024,   1), " KB")
+          paste0(round(bytes / 1024, 1), " KB")
      } else {
           paste0(bytes, " bytes")
      }
@@ -50,13 +50,13 @@ to_csv <- function(imd_raster, lat, lon, file_path = NULL) {
      dates <- as.Date(names(imd_raster))
      df    <- data.frame(date = dates, value = vals)
 
-     message(paste("Extracted", nrow(df)), "daily values",
-         "| lat =", lat, "| lon =", lon, "\n")
-     message(paste(paste("Non-NA days:", sum(!is.na(df$value))), "\n"))
+     message(paste("Extracted", nrow(df), "daily values",
+                   "| lat =", lat, "| lon =", lon))
+     message(paste("Non-NA days:", sum(!is.na(df$value))))
 
      if (!is.null(file_path)) {
           write.csv(df, file = file_path, row.names = FALSE)
-          message(paste("Saved to:", file_path, "\n"))
+          message(paste("Saved to:", file_path))
      }
 
      return(invisible(df))
@@ -85,12 +85,9 @@ to_csv <- function(imd_raster, lat, lon, file_path = NULL) {
 to_netcdf <- function(imd_raster, file_path, variable = "rain") {
 
      labels <- list(
-          rain = list(long_name = "Daily rainfall",
-                      units     = "mm/day"),
-          tmax = list(long_name = "Daily maximum temperature",
-                      units     = "deg_C"),
-          tmin = list(long_name = "Daily minimum temperature",
-                      units     = "deg_C")
+          rain = list(long_name = "Daily rainfall",            units = "mm/day"),
+          tmax = list(long_name = "Daily maximum temperature", units = "deg_C"),
+          tmin = list(long_name = "Daily minimum temperature", units = "deg_C")
      )
      meta <- if (!is.null(labels[[variable]])) labels[[variable]] else
           list(long_name = variable, units = "unknown")
@@ -129,9 +126,9 @@ to_netcdf <- function(imd_raster, file_path, variable = "rain") {
           prec     = "float"
      )
 
-     message(paste("Writing NetCDF:", file_path, "\n"))
-     message(paste("Dimensions: lon =", n_cols, "| lat =", n_rows,
-         "| time =", n_days, "\n"))
+     message(paste("Writing NetCDF:", file_path))
+     message(paste("Dimensions: lon =", n_cols,
+                   "| lat =", n_rows, "| time =", n_days))
 
      nc <- ncdf4::nc_create(file_path, vars = list(nc_var))
 
@@ -164,8 +161,8 @@ to_netcdf <- function(imd_raster, file_path, variable = "rain") {
      close(pb)
      ncdf4::nc_close(nc)
 
-     message(paste("\nSaved:", file_path,
-         "(", .file_size_str(file_path)), ")\n")
+     message(paste("Saved:", file_path,
+                   "(", .file_size_str(file_path), ")"))
      return(invisible(file_path))
 }
 
@@ -190,9 +187,9 @@ to_netcdf <- function(imd_raster, file_path, variable = "rain") {
 #' @export
 to_geotiff <- function(imd_raster, file_path) {
 
-     message(paste("Writing GeoTIFF:", file_path, "\n"))
-     message(paste("Layers:", terra::nlyr(imd_raster)),
-         "| Extent:", as.character(terra::ext(imd_raster)), "\n")
+     message(paste("Writing GeoTIFF:", file_path))
+     message(paste("Layers:", terra::nlyr(imd_raster),
+                   "| Extent:", as.character(terra::ext(imd_raster))))
 
      terra::writeRaster(imd_raster,
                         filename  = file_path,
@@ -203,6 +200,6 @@ to_geotiff <- function(imd_raster, file_path) {
                                       "TILED=YES"))
 
      message(paste("Saved:", file_path,
-         "(", .file_size_str(file_path)), ")\n")
+                   "(", .file_size_str(file_path), ")"))
      return(invisible(file_path))
 }

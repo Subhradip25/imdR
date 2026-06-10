@@ -60,8 +60,8 @@ trend_analysis(goa_idx, index_col = "total",
                name = "Goa", file_dir = tempdir())
 
 # Temperature trend
-tx  <- get_data("tmax", 2011, 2020, tempdir())
-tn  <- get_data("tmin", 2011, 2020, tempdir())
+tx   <- get_data("tmax", 2011, 2020, tempdir())
+tn   <- get_data("tmin", 2011, 2020, tempdir())
 tidx <- compute_temp_indices(tx, tn, file_dir = tempdir())
 trend_analysis(tidx, index_col = "mean_tmax",
                file_dir = tempdir())

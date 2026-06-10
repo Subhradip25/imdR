@@ -32,7 +32,7 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
      # Extract year by year to avoid stacking large rasters into memory.
      # Stacking 10+ years at once causes memory errors on Windows.
      if (is.list(imd_raster) && !inherits(imd_raster, "SpatRaster")) {
-          message("Extracting point data year by year...\n")
+          message("Extracting point data year by year...")
           df_list <- lapply(names(imd_raster), function(yr) {
                to_csv(imd_raster[[yr]], lat, lon)
           })
@@ -48,9 +48,11 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
      df              <- df[order(df$date), ]
      rownames(df)    <- NULL
 
-     message(paste("Total rows:", nrow(df)), "| Date range:",
-         as.character(min(df$date)), "to",
-         as.character(max(df$date)), "\n")
+     message(paste("Total rows:", nrow(df),
+                   "| Date range:",
+                   as.character(min(df$date)),
+                   "to",
+                   as.character(max(df$date))))
 
      if (save_csv) {
           fname <- file.path(
@@ -58,7 +60,7 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
                paste0(variable, "_", lat, "N_", lon, "E_",
                       start_yr, "_", end_yr, ".csv"))
           write.csv(df, fname, row.names = FALSE)
-          message(paste("Saved:", fname, "\n"))
+          message(paste("Saved:", fname))
      }
 
      return(invisible(df))
@@ -87,7 +89,7 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
 #'                     file_dir = tempdir())
 #' head(df)
 #'
-#' # Long time series — works on Windows without memory errors
+#' # Long time series -- works on Windows without memory errors
 #' df <- get_point_all(lat = 15.5, lon = 73.8,
 #'                     start_yr = 1985, end_yr = 2020,
 #'                     file_dir = tempdir())
@@ -98,21 +100,20 @@ get_point_all <- function(lat, lon, start_yr, end_yr,
                           file_dir = ".", save_csv = TRUE) {
 
      message(paste("=== Extracting all variables at lat =",
-         lat, ", lon =", lon, "===\n\n"))
+                   lat, ", lon =", lon, "==="))
 
-     message("--- Rainfall ---\n")
+     message("--- Rainfall ---")
      df_rain <- get_point(lat, lon, "rain", start_yr, end_yr,
                           file_dir, save_csv = FALSE)
 
-     message("\n--- Max Temperature ---\n")
+     message("--- Max Temperature ---")
      df_tmax <- get_point(lat, lon, "tmax", start_yr, end_yr,
                           file_dir, save_csv = FALSE)
 
-     message("\n--- Min Temperature ---\n")
+     message("--- Min Temperature ---")
      df_tmin <- get_point(lat, lon, "tmin", start_yr, end_yr,
                           file_dir, save_csv = FALSE)
 
-     # Merge all three on date
      df <- merge(df_rain,
                  df_tmax[, c("date", "tmax")],
                  by = "date", all = TRUE)
@@ -121,17 +122,19 @@ get_point_all <- function(lat, lon, start_yr, end_yr,
                  by = "date", all = TRUE)
      df <- df[order(df$date),
               c("date", "lat", "lon", "rain", "tmax", "tmin")]
-     df$dtr    <- round(df$tmax - df$tmin, 3)
+     df$dtr       <- round(df$tmax - df$tmin, 3)
      rownames(df) <- NULL
 
-     message("\n--- Merged summary ---\n")
-     message(paste(paste("Rows:", nrow(df)), "\n"))
-     message(paste("Date range:", as.character(min(df$date, na.rm = TRUE))),
-         "to", as.character(max(df$date, na.rm = TRUE)), "\n")
-     message(paste(paste("Columns:", paste(names(df)), collapse = ", "), "\n"))
-     message(paste(paste("Non-NA rain days:", sum(!is.na(df$rain))), "\n"))
-     message(paste(paste("Non-NA tmax days:", sum(!is.na(df$tmax))), "\n"))
-     message(paste(paste("Non-NA tmin days:", sum(!is.na(df$tmin))), "\n"))
+     message("--- Merged summary ---")
+     message(paste("Rows:", nrow(df)))
+     message(paste("Date range:",
+                   as.character(min(df$date, na.rm = TRUE)),
+                   "to",
+                   as.character(max(df$date, na.rm = TRUE))))
+     message(paste("Columns:", paste(names(df), collapse = ", ")))
+     message(paste("Non-NA rain days:", sum(!is.na(df$rain))))
+     message(paste("Non-NA tmax days:", sum(!is.na(df$tmax))))
+     message(paste("Non-NA tmin days:", sum(!is.na(df$tmin))))
 
      if (save_csv) {
           fname <- file.path(
@@ -139,7 +142,7 @@ get_point_all <- function(lat, lon, start_yr, end_yr,
                paste0("imd_all_", lat, "N_", lon, "E_",
                       start_yr, "_", end_yr, ".csv"))
           write.csv(df, fname, row.names = FALSE)
-          message(paste("Saved:", fname, "\n"))
+          message(paste("Saved:", fname))
      }
 
      return(invisible(df))

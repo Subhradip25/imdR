@@ -127,7 +127,9 @@ goa <- get_boundary("state", "Goa")
 
 ## Data source
 
-IMD gridded data: <https://imdpune.gov.in/>
+IMD gridded data: India Meteorological Department, Pune.
+<https://imdpune.gov.in> (accessed periodically; server may be
+temporarily unavailable)
 
 Boundaries: Survey of India (SOI)
 

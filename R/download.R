@@ -45,10 +45,10 @@ get_data <- function(variable, start_yr, end_yr,
           dest <- file.path(out_dir, paste0(yr, ".grd"))
 
           if (file.exists(dest) && !overwrite) {
-               message(paste("Already exists, skipping:", dest, "\n"))
+               message(paste("Already exists, skipping:", dest))
           } else {
 
-               message(paste("Downloading:", variable, yr, "... "))
+               message(paste("Downloading:", variable, yr, "..."))
 
                is_leap  <- (yr %% 4 == 0 & yr %% 100 != 0) | (yr %% 400 == 0)
                n_days   <- ifelse(is_leap, 366, 365)
@@ -69,7 +69,8 @@ get_data <- function(variable, start_yr, end_yr,
                          httr2::req_timeout(300) |>
                          httr2::req_perform()
                }, error = function(e) {
-                    message(paste(paste("FAILED -", conditionMessage(e)), "\n")); NULL
+                    message(paste("FAILED -", conditionMessage(e)))
+                    NULL
                })
 
                if (is.null(resp)) next
@@ -77,13 +78,13 @@ get_data <- function(variable, start_yr, end_yr,
                body <- httr2::resp_body_raw(resp)
 
                if (length(body) != expected) {
-                    message(paste("FAILED - size mismatch:", length(body)),
-                        "vs", expected, "\n")
+                    message(paste("FAILED - size mismatch:",
+                                  length(body), "vs", expected))
                     next
                }
 
                writeBin(body, dest)
-               message(paste("(", round(length(body)) / 1024^2, 1), "MB )\n")
+               message(paste("(", round(length(body) / 1024^2, 1), "MB )"))
           }
 
           arr   <- read_imd_binary(dest, variable, yr)
@@ -94,11 +95,11 @@ get_data <- function(variable, start_yr, end_yr,
      if (length(rlist) == 0) stop("No data downloaded or found.")
 
      if (length(rlist) == 1) {
-          message("\nDone!\n")
+          message("Done!")
           return(invisible(rlist[[1]]))
      } else {
-          message(paste("Multi-year: returning named list of", length(rlist)),
-              "SpatRasters\n")
+          message(paste("Multi-year: returning named list of",
+                        length(rlist), "SpatRasters"))
           return(invisible(rlist))
      }
 }
@@ -129,9 +130,10 @@ open_data <- function(variable, start_yr, end_yr, file_dir = ".") {
           fpath <- file.path(path.expand(file_dir), variable,
                              paste0(yr, ".grd"))
           if (!file.exists(fpath)) {
-               warning("File not found, skipping: ", fpath); next
+               warning("File not found, skipping: ", fpath)
+               next
           }
-          message(paste("Processing year", yr, "...\n"))
+          message(paste("Processing year", yr, "..."))
           rlist[[as.character(yr)]] <-
                array_to_raster(read_imd_binary(fpath, variable, yr),
                                variable, yr)
@@ -142,7 +144,7 @@ open_data <- function(variable, start_yr, end_yr, file_dir = ".") {
 
      if (length(rlist) == 1) return(invisible(rlist[[1]]))
 
-     message(paste("Multi-year: returning named list of", length(rlist)),
-         "SpatRasters\n")
+     message(paste("Multi-year: returning named list of",
+                   length(rlist), "SpatRasters"))
      return(invisible(rlist))
 }
