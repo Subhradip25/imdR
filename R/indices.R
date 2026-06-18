@@ -30,7 +30,7 @@
 compute_rainfall_indices <- function(rain_raster,
                                      level    = NULL,
                                      name     = NULL,
-                                     file_dir = ".",
+                                     file_dir,
                                      save_csv = TRUE) {
 
      if (is.list(rain_raster) && !inherits(rain_raster, "SpatRaster")) {
@@ -200,7 +200,7 @@ compute_temp_indices <- function(tmax_raster,
                                  tmin_raster,
                                  level    = NULL,
                                  name     = NULL,
-                                 file_dir = ".",
+                                 file_dir,
                                  save_csv = TRUE) {
 
      if (is.list(tmax_raster) && !inherits(tmax_raster, "SpatRaster")) {

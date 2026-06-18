@@ -25,7 +25,7 @@
 #' }
 #' @export
 get_data <- function(variable, start_yr, end_yr,
-                     file_dir = ".", overwrite = FALSE) {
+                     file_dir, overwrite = FALSE) {
 
      if (!variable %in% c("rain", "tmax", "tmin"))
           stop("variable must be 'rain', 'tmax', or 'tmin'")
@@ -117,7 +117,7 @@ get_data <- function(variable, start_yr, end_yr,
 #' rain_3yr <- open_data("rain", 2018, 2020, tempdir())
 #' }
 #' @export
-open_data <- function(variable, start_yr, end_yr, file_dir = ".") {
+open_data <- function(variable, start_yr, end_yr, file_dir) {
 
      if (!variable %in% c("rain", "tmax", "tmin"))
           stop("variable must be 'rain', 'tmax', or 'tmin'")

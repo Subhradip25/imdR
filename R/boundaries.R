@@ -147,7 +147,7 @@ extract_by_boundary <- function(imd_raster,
                                 variable = "rain",
                                 save     = FALSE,
                                 format   = "netcdf",
-                                file_dir = ".") {
+                                file_dir) {
 
      if (is.null(name))
           stop("Please provide a 'name' for the state or district.")

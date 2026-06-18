@@ -9,7 +9,7 @@ compute_temp_indices(
   tmin_raster,
   level = NULL,
   name = NULL,
-  file_dir = ".",
+  file_dir,
   save_csv = TRUE
 )
 }

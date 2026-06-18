@@ -62,7 +62,7 @@ kerala_sf   <- get_boundary("state",    "Kerala")
 ## Step 2 — Download data
 
 ```{r download}
-file_dir <- "~/imdR_data"
+file_dir <- tempdir()
 
 # Single year — returns a SpatRaster directly
 rain2020 <- get_data("rain", 2020, 2020, file_dir)
@@ -86,16 +86,16 @@ plot_imd(rain2020, "2020-06-28", "rain")
 # Zoom to a state
 plot_imd(rain2020, "2020-06-28", "rain",
          level = "state", name = "Kerala",
-         save_path = "~/imdR_data/rain_Kerala_20200628.png")
+         save_path = file.path(tempdir(), "rain_Kerala_20200628.png"))
 
 # Zoom to a district
 plot_imd(rain2020, "2020-06-28", "rain",
          level = "district", name = "North Goa",
-         save_path = "~/imdR_data/rain_NorthGoa_20200628.png")
+         save_path = file.path(tempdir(), "rain_NorthGoa_20200628.png"))
 
 # Temperature map
 plot_imd(tmax2020, "2020-05-20", "tmax",
-         save_path = "~/imdR_data/tmax_India_20200520.png")
+         save_path = file.path(tempdir(), "tmax_India_20200520.png"))
 ```
 
 ## Step 4 — Point extraction

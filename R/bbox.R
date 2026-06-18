@@ -45,7 +45,7 @@
 #' @export
 get_bbox <- function(lat_min, lat_max, lon_min, lon_max,
                      variable, start_yr, end_yr,
-                     file_dir = ".",
+                     file_dir,
                      format   = "netcdf",
                      save     = TRUE) {
 

@@ -4,7 +4,7 @@
 \alias{get_data}
 \title{Download and read IMD gridded data}
 \usage{
-get_data(variable, start_yr, end_yr, file_dir = ".", overwrite = FALSE)
+get_data(variable, start_yr, end_yr, file_dir, overwrite = FALSE)
 }
 \arguments{
 \item{variable}{One of "rain", "tmax", "tmin".}

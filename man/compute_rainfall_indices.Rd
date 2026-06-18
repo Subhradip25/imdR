@@ -8,7 +8,7 @@ compute_rainfall_indices(
   rain_raster,
   level = NULL,
   name = NULL,
-  file_dir = ".",
+  file_dir,
   save_csv = TRUE
 )
 }

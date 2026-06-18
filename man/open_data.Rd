@@ -4,7 +4,7 @@
 \alias{open_data}
 \title{Read cached IMD .grd files from disk}
 \usage{
-open_data(variable, start_yr, end_yr, file_dir = ".")
+open_data(variable, start_yr, end_yr, file_dir)
 }
 \arguments{
 \item{variable}{One of "rain", "tmax", "tmin".}

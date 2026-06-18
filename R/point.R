@@ -25,7 +25,7 @@
 #' }
 #' @export
 get_point <- function(lat, lon, variable, start_yr, end_yr,
-                      file_dir = ".", save_csv = TRUE) {
+                      file_dir, save_csv = TRUE) {
 
      imd_raster <- get_data(variable, start_yr, end_yr, file_dir)
 
@@ -97,7 +97,7 @@ get_point <- function(lat, lon, variable, start_yr, end_yr,
 #' }
 #' @export
 get_point_all <- function(lat, lon, start_yr, end_yr,
-                          file_dir = ".", save_csv = TRUE) {
+                          file_dir, save_csv = TRUE) {
 
      message(paste("=== Extracting all variables at lat =",
                    lat, ", lon =", lon, "==="))

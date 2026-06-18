@@ -12,7 +12,7 @@ get_bbox(
   variable,
   start_yr,
   end_yr,
-  file_dir = ".",
+  file_dir,
   format = "netcdf",
   save = TRUE
 )

@@ -9,7 +9,7 @@ trend_analysis(
   index_col,
   level = NULL,
   name = NULL,
-  file_dir = ".",
+  file_dir,
   save_csv = TRUE,
   plot = TRUE
 )

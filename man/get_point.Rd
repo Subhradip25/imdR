@@ -4,15 +4,7 @@
 \alias{get_point}
 \title{Extract daily time series for a single variable at a point}
 \usage{
-get_point(
-  lat,
-  lon,
-  variable,
-  start_yr,
-  end_yr,
-  file_dir = ".",
-  save_csv = TRUE
-)
+get_point(lat, lon, variable, start_yr, end_yr, file_dir, save_csv = TRUE)
 }
 \arguments{
 \item{lat}{Latitude in decimal degrees.}

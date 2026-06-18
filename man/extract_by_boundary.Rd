@@ -11,7 +11,7 @@ extract_by_boundary(
   variable = "rain",
   save = FALSE,
   format = "netcdf",
-  file_dir = "."
+  file_dir
 )
 }
 \arguments{

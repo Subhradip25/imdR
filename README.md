@@ -51,7 +51,7 @@ remotes::install_github("Subhradip25/imdR")
 ``` r
 library(imdR)
 
-file_dir <- "~/imdR_data"
+file_dir <- tempdir()
 
 # Download 2020 rainfall data
 rain2020 <- get_data("rain", 2020, 2020, file_dir)

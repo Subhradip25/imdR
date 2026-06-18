@@ -4,7 +4,7 @@
 \alias{get_point_all}
 \title{Extract daily time series for all variables at a point}
 \usage{
-get_point_all(lat, lon, start_yr, end_yr, file_dir = ".", save_csv = TRUE)
+get_point_all(lat, lon, start_yr, end_yr, file_dir, save_csv = TRUE)
 }
 \arguments{
 \item{lat}{Latitude in decimal degrees.}
