@@ -28,6 +28,10 @@ The package bundles Survey of India (SOI) approved state and district
 boundaries, enabling boundary-aware extraction and publication-quality maps
 directly from R.
 
+Two data sources are supported: the **quality-controlled archive**
+(`get_data()`, released yearly) and **provisional real-time** daily data
+(`get_realtime()`, updated with roughly a one-day lag).
+
 ## Installation
 
 ```{r install}
@@ -59,7 +63,10 @@ north_goa   <- get_boundary("district", "North Goa")
 kerala_sf   <- get_boundary("state",    "Kerala")
 ```
 
-## Step 2 — Download data
+## Step 2 — Download archive data
+
+The archive is the authoritative, quality-controlled dataset, released by
+IMD as full-year files.
 
 ```{r download}
 file_dir <- tempdir()
@@ -77,7 +84,40 @@ rain_3yr <- get_data("rain", 2018, 2020, file_dir)
 rain2020 <- open_data("rain", 2020, 2020, file_dir)
 ```
 
-## Step 3 — Visualize
+## Step 3 — Download real-time (provisional) data
+
+The archive is released yearly with a lag, so the current year is not
+available until after it ends. For recent dates — yesterday, this month,
+or last month — use `get_realtime()`, which downloads provisional daily
+grids from IMD's real-time endpoints.
+
+```{r realtime}
+# Yesterday's rainfall across India
+y <- Sys.Date() - 1
+r_today <- get_realtime("rain", as.character(y), file_dir = file_dir)
+
+# A date range — e.g. this month to date
+first <- format(Sys.Date(), "%Y-%m-01")
+r_month <- get_realtime("rain", first, as.character(Sys.Date() - 1),
+                        file_dir = file_dir)
+
+# Daily rainfall time series at a location (e.g. Agartala, Tripura)
+agartala <- get_realtime("rain", "2026-03-01", "2026-06-23",
+                         file_dir = file_dir)
+df <- to_csv(agartala, lat = 23.83, lon = 91.28)
+head(df)
+```
+
+**Important caveats:**
+
+- Real-time data is **provisional** and may be revised later by IMD.
+  For final analysis, use `get_data()` once the archive year is released.
+- Real-time **rainfall** is 0.25 degree (same grid as the archive), but
+  real-time **temperature** is 0.5 degree (61 x 61) — different from the
+  1.0 degree archive temperature. Do not mix resolutions without resampling.
+- Variables: `"rain"`, `"tmax"`, `"tmin"`.
+
+## Step 4 — Visualize
 
 ```{r maps}
 # Full India map
@@ -98,7 +138,7 @@ plot_imd(tmax2020, "2020-05-20", "tmax",
          save_path = file.path(tempdir(), "tmax_India_20200520.png"))
 ```
 
-## Step 4 — Point extraction
+## Step 5 — Point extraction
 
 ```{r point}
 # Extract daily time series at Panaji, Goa
@@ -106,14 +146,12 @@ goa_rain <- get_point(lat = 15.5, lon = 73.8,
                       variable = "rain",
                       start_yr = 2020, end_yr = 2020,
                       file_dir = file_dir)
-
 head(goa_rain)
 
 # Extract all three variables at once (rain + tmax + tmin + DTR)
 goa_all <- get_point_all(lat = 15.5, lon = 73.8,
                          start_yr = 2020, end_yr = 2020,
                          file_dir  = file_dir)
-
 head(goa_all)
 
 # Plot the daily time series
@@ -121,7 +159,7 @@ plot_timeseries(goa_rain, variable = "rain",
                 title = "Goa Daily Rainfall 2020")
 ```
 
-## Step 5 — Bounding box and boundary extraction
+## Step 6 — Bounding box and boundary extraction
 
 ```{r extraction}
 # Crop to a bounding box
@@ -147,7 +185,7 @@ north_goa_rain <- extract_by_boundary(
 )
 ```
 
-## Step 6 — Rainfall climate indices
+## Step 7 — Rainfall climate indices
 
 ```{r rainfall-indices}
 # Compute 11 indices for full India (2020)
@@ -172,7 +210,6 @@ goa_rain_idx <- compute_rainfall_indices(
   rain2020, level = "state", name = "Goa",
   file_dir = file_dir
 )
-
 print(goa_rain_idx)
 
 # Multi-year indices for trend analysis
@@ -180,7 +217,7 @@ idx_3yr <- compute_rainfall_indices(rain_3yr,
                                     file_dir = file_dir)
 ```
 
-## Step 7 — Temperature climate indices
+## Step 8 — Temperature climate indices
 
 ```{r temp-indices}
 # Compute 13 temperature indices for full India
@@ -208,11 +245,10 @@ goa_temp_idx <- compute_temp_indices(
   level = "state", name = "Goa",
   file_dir = file_dir
 )
-
 print(goa_temp_idx)
 ```
 
-## Step 8 — Trend analysis
+## Step 9 — Trend analysis
 
 ```{r trend}
 # Mann-Kendall test + Sen's slope on any index
@@ -238,7 +274,6 @@ goa_idx_10yr <- compute_rainfall_indices(
   rain_10yr, level = "state", name = "Goa",
   file_dir = file_dir
 )
-
 trend_goa <- trend_analysis(goa_idx_10yr,
                             index_col = "total",
                             name      = "Goa",
