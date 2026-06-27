@@ -1,6 +1,6 @@
 Package: imdR
 Title: Download, Process and Visualize IMD Gridded Meteorological Data
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: c(
     person("Subhradip", "Bhattacharjee",
            email = "subhradip25@gmail.com",
