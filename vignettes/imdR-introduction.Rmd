@@ -159,7 +159,42 @@ plot_timeseries(goa_rain, variable = "rain",
                 title = "Goa Daily Rainfall 2020")
 ```
 
-## Step 6 — Bounding box and boundary extraction
+## Step 6 — District / state time series
+
+`get_district_series()` returns a tidy daily time series of the spatial
+mean across all grid cells in a state or district — the correct way to
+summarise an area (average over space). To get a seasonal or annual
+**total** for rainfall, sum the returned daily values (rainfall
+accumulates over time).
+
+```{r district-series}
+# District rainfall — multi-year daily series, saved as CSV
+karnal <- get_district_series("rain", "Karnal",
+                              start = 2018, end = 2020,
+                              file_dir = file_dir)
+head(karnal)
+
+# Annual total = sum of daily means
+sum(karnal$rain, na.rm = TRUE)
+
+# State temperature with a publication-quality plot.
+# Goa is smaller than a 1.0 degree temperature cell, so touches = TRUE
+# captures the overlapping cells.
+get_district_series("tmax", "Goa",
+                    start = 2020, end = 2020,
+                    level = "state",
+                    file_dir = file_dir,
+                    touches = TRUE,
+                    plot = TRUE)
+
+# Real-time district series — recent provisional data
+get_district_series("rain", "North Tripura",
+                    start = "2026-06-01", end = "2026-06-25",
+                    file_dir = file_dir,
+                    realtime = TRUE, touches = TRUE)
+```
+
+## Step 7 — Bounding box and boundary extraction
 
 ```{r extraction}
 # Crop to a bounding box
@@ -185,7 +220,7 @@ north_goa_rain <- extract_by_boundary(
 )
 ```
 
-## Step 7 — Rainfall climate indices
+## Step 8 — Rainfall climate indices
 
 ```{r rainfall-indices}
 # Compute 11 indices for full India (2020)
@@ -217,7 +252,7 @@ idx_3yr <- compute_rainfall_indices(rain_3yr,
                                     file_dir = file_dir)
 ```
 
-## Step 8 — Temperature climate indices
+## Step 9 — Temperature climate indices
 
 ```{r temp-indices}
 # Compute 13 temperature indices for full India
@@ -248,7 +283,7 @@ goa_temp_idx <- compute_temp_indices(
 print(goa_temp_idx)
 ```
 
-## Step 9 — Trend analysis
+## Step 10 — Trend analysis
 
 ```{r trend}
 # Mann-Kendall test + Sen's slope on any index
@@ -288,6 +323,7 @@ All functions that produce files use consistent naming conventions:
 |---|---|
 | `get_point()` | `rain_15.5N_73.8E_2020_2020.csv` |
 | `get_point_all()` | `imd_all_15.5N_73.8E_2020_2020.csv` |
+| `get_district_series()` | `rain_Karnal_series_2018_2020.csv` |
 | `get_bbox()` | `rain_8N_21N_73E_78E_2020_2020.nc` |
 | `extract_by_boundary()` | `rain_Kerala_2020-01-01_2020-12-31.nc` |
 | `compute_rainfall_indices()` | `rainfall_indices_Goa.csv` |
