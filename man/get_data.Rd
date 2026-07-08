@@ -4,7 +4,15 @@
 \alias{get_data}
 \title{Download and read IMD gridded data}
 \usage{
-get_data(variable, start_yr, end_yr, file_dir, overwrite = FALSE)
+get_data(
+  variable,
+  start_yr,
+  end_yr,
+  file_dir,
+  overwrite = FALSE,
+  parallel = FALSE,
+  workers = 4
+)
 }
 \arguments{
 \item{variable}{One of "rain", "tmax", "tmin".}
@@ -16,6 +24,10 @@ get_data(variable, start_yr, end_yr, file_dir, overwrite = FALSE)
 \item{file_dir}{Directory to save downloaded .grd files.}
 
 \item{overwrite}{Re-download even if file exists? Default FALSE.}
+
+\item{parallel}{Download years in parallel? Default FALSE.}
+
+\item{workers}{Number of parallel workers when parallel = TRUE. Default 4.}
 }
 \value{
 A SpatRaster (single year) or named list of SpatRasters (multi-year).
@@ -26,6 +38,12 @@ terra SpatRaster objects. Single year returns a SpatRaster directly.
 Multi-year returns a named list of SpatRasters (one per year) because
 leap and non-leap years have different layer counts.
 }
+\details{
+Set \code{parallel = TRUE} to download multiple years concurrently
+(requires the \pkg{future} and \pkg{future.apply} packages). Only the
+network download is parallelized; reading/rasterizing stays sequential
+because terra pointers are not safe across processes.
+}
 \examples{
 \donttest{
 # Download single year rainfall
@@ -34,8 +52,8 @@ rain2020 <- get_data("rain", 2020, 2020, tempdir())
 # Download multiple years (returns named list)
 rain_3yr <- get_data("rain", 2018, 2020, tempdir())
 
-# Download temperature data
-tmax2020 <- get_data("tmax", 2020, 2020, tempdir())
-tmin2020 <- get_data("tmin", 2020, 2020, tempdir())
+# Parallel download of a long range
+rain_hist <- get_data("rain", 2000, 2020, tempdir(),
+                      parallel = TRUE, workers = 4)
 }
 }

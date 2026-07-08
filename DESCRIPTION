@@ -1,6 +1,6 @@
 Package: imdR
 Title: Download, Process and Visualize IMD Gridded Meteorological Data
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: c(
     person("Subhradip", "Bhattacharjee",
            email = "subhradip25@gmail.com",
@@ -42,6 +42,8 @@ Imports:
     zoo
 LazyData: true
 Suggests:
+    future,
+    future.apply,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
